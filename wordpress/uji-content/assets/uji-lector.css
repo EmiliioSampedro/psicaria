@@ -117,8 +117,9 @@
    archivo, cualquier regla .uji-xxx posterior que redeclare una de estas
    propiedades (p. ej. .uji-sub{margin:16px 0}) gana por orden de aparición. */
 .uji-lector *,.uji-modal *{
-  float:none;clear:none;width:auto;max-width:none;margin:0;
-  text-align:left;text-decoration:none;
+  float:none;clear:none;width:auto;max-width:none;margin:0;padding:0;
+  text-align:left;text-decoration:none;background:none;border:0;
+  color:inherit;font-size:inherit;
 }
 @media (max-width:940px){
   .uji-lector{grid-template-columns:minmax(0,1fr);gap:20px;padding:18px 14px 70px;--uji-canal:0px}
