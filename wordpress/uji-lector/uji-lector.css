@@ -123,14 +123,6 @@
 @media (max-width:940px){
   .uji-lector{grid-template-columns:minmax(0,1fr);gap:20px;padding:18px 14px 70px}
 }
-/* en escritorio, escapar del contenedor del tema (que suele tener su propio
-   ancho máximo, más estrecho) para aprovechar casi todo el ancho de pantallas
-   de portátil/monitor medianas, en vez de quedarnos limitados por debajo de
-   los 1600px de tope. La técnica usa vw en vez de % para no depender del
-   ancho real del contenedor padre. */
-@media (min-width:941px){
-  .uji-lector{width:98vw;margin-left:calc(-49vw + 50%);margin-right:calc(-49vw + 50%)}
-}
 
 /* ---------- índice lateral ---------- */
 .uji-rail{position:sticky;top:24px;display:flex;flex-direction:column;gap:12px}
