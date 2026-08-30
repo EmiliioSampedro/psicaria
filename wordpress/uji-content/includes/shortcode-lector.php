@@ -28,6 +28,27 @@ function uji_content_maybe_enqueue_lector_assets() {
 	}
 }
 
+/**
+ * Si el shortcode se coloca dentro de un bloque de párrafo (Gutenberg lo
+ * envuelve en <p class="wp-block-paragraph">, wpautop hace lo mismo con la
+ * clásica), el navegador se encuentra con <div> dentro de un <p> y cierra
+ * la etiqueta antes de tiempo: eso deja huecos en blanco y trozos de HTML
+ * sueltos. Quitamos ese <p> envolvente después de que el shortcode se haya
+ * expandido, sea cual sea el editor que lo haya metido ahí.
+ */
+add_filter( 'the_content', 'uji_content_strip_wrapping_p', 20 );
+
+function uji_content_strip_wrapping_p( $content ) {
+	if ( false === strpos( $content, 'uji-progreso' ) ) {
+		return $content;
+	}
+	return preg_replace(
+		'#<p[^>]*>\s*(<div class="uji-progreso">.*?</script>)\s*</p>#s',
+		'$1',
+		$content
+	);
+}
+
 function uji_content_shortcode_lector( $atts ) {
 	global $wpdb;
 
