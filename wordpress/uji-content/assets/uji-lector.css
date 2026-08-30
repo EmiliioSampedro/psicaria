@@ -107,13 +107,16 @@
   gap:32px;max-width:1280px;margin:0 auto;padding:32px 24px 90px;
   align-items:start;box-sizing:border-box;
 }
-.uji-lector *,.uji-lector *::before,.uji-lector *::after{box-sizing:border-box}
+.uji-lector *,.uji-lector *::before,.uji-lector *::after,
+.uji-modal *,.uji-modal *::before,.uji-modal *::after{box-sizing:border-box}
 /* blindaje contra selectores sueltos de elemento (article, section, aside, nav...)
-   que pueda traer el tema activo (float, width, margin, text-align...). Misma
+   que pueda traer el tema activo (float, width, margin, text-align...). Cubre
+   también .uji-modal: el modal de artículos se añade directamente a <body>,
+   fuera de .uji-lector, y su contenido usa <article class="uji-art">. Misma
    especificidad que el reset de box-sizing de arriba: como está antes en el
    archivo, cualquier regla .uji-xxx posterior que redeclare una de estas
    propiedades (p. ej. .uji-sub{margin:16px 0}) gana por orden de aparición. */
-.uji-lector *{
+.uji-lector *,.uji-modal *{
   float:none;clear:none;width:auto;max-width:none;margin:0;
   text-align:left;text-decoration:none;
 }
