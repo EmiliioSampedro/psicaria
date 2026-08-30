@@ -403,9 +403,11 @@ function uji_content_render_nodo( $nodo ) {
 
 	if ( 'epigrafe' === $nodo->tipo ) {
 		$html  = '<section class="uji-ap" id="' . esc_attr( $id ) . '">';
+		$html .= '<div class="uji-ap__cab">';
 		$html .= '<div class="uji-ap__n"><span>' . esc_html( $nodo->numero ) . '</span></div>';
-		$html .= '<div class="uji-ap__cuerpo">';
 		$html .= '<h3 class="uji-ap__titulo">' . esc_html( $nodo->titulo ) . '</h3>';
+		$html .= '</div>';
+		$html .= '<div class="uji-ap__cuerpo">';
 		if ( ! empty( $nodo->contenido_html ) ) {
 			$html .= $nodo->contenido_html;
 		}

@@ -261,7 +261,11 @@
 .uji-ap + .uji-ap{border-top:1px solid var(--uji-borde);margin-top:-1px}
 .uji-ap:last-child{border-radius:0 0 12px 12px}
 .uji-ap--suelto{padding-top:18px}
-.uji-ap__n{position:relative;margin-bottom:8px}
+.uji-ap__cab{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  margin-bottom:13px;padding-bottom:9px;border-bottom:1px dashed var(--uji-borde);
+}
+.uji-ap__n{position:relative;flex:none}
 .uji-ap__n span{
   position:static;display:inline-block;
   font-family:var(--uji-mono);font-size:12px;font-weight:600;
@@ -271,10 +275,10 @@
 }
 .uji-ap__cuerpo{min-width:0;padding-bottom:4px}
 .uji-ap__titulo{
-  margin:0 0 13px;font-family:var(--uji-display);font-weight:600;
+  margin:0;flex:1 1 auto;min-width:0;
+  font-family:var(--uji-display);font-weight:600;
   font-size:18px;line-height:1.28;letter-spacing:-.015em;
   text-wrap:balance;color:var(--uji-tinta);
-  padding-bottom:9px;border-bottom:1px dashed var(--uji-borde);
 }
 @media (max-width:940px){
   .uji-ap{padding:18px 14px 10px}
