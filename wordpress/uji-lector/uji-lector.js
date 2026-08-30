@@ -77,16 +77,25 @@
   var vista = 'tema';
 
   function aplicarVista(){
+    var movil = esMovil();
     tabs.forEach(function(t){
       var p = t.getAttribute('data-panel');
-      var on = p === 'tema' ? vista === 'tema' : (vista !== 'tema' && p === panelLateral);
+      var on;
+      if (p === 'tema') {
+        on = vista === 'tema';
+      } else if (movil) {
+        on = vista !== 'tema' && p === panelLateral;
+      } else {
+        // en escritorio "tema" no existe como vista aparte: el panel
+        // lateral activo se marca siempre, independientemente de vista.
+        on = p === panelLateral;
+      }
       t.classList.toggle('activo', on);
       t.setAttribute('aria-selected', on ? 'true' : 'false');
     });
     panelesLateral.forEach(function(p){
       p.hidden = p.getAttribute('data-panel') !== panelLateral;
     });
-    var movil = esMovil();
     if (cuerpo) cuerpo.hidden = movil && vista !== 'tema';
     if (railCuerpo) railCuerpo.hidden = movil && vista === 'tema';
     lector.classList.toggle('uji-modo-esquema', panelLateral === 'esquema');

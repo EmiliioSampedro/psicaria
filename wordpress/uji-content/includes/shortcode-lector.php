@@ -164,16 +164,15 @@ function uji_content_shortcode_lector( $atts ) {
 		</aside>
 
 		<div class="uji-cuerpo">
-			<div class="uji-cuerpo__tabs" role="tablist">
-				<button type="button" class="uji-vista-tab activo" data-vista="tema" role="tab" aria-selected="true">Tema</button>
-				<button type="button" class="uji-vista-tab" data-vista="esquema" role="tab" aria-selected="false">Esquema</button>
-			</div>
+			<header class="uji-cuerpo__cab">
+				<span class="uji-tema__eyebrow">Tema <?php echo esc_html( $tema->numero ); ?></span>
+				<h1 class="uji-tema__titulo"><?php echo esc_html( $tema->titulo ); ?></h1>
+				<div class="uji-cuerpo__tabs" role="tablist">
+					<button type="button" class="uji-vista-tab activo" data-vista="tema" role="tab" aria-selected="true">Tema</button>
+					<button type="button" class="uji-vista-tab" data-vista="esquema" role="tab" aria-selected="false">Esquema</button>
+				</div>
+			</header>
 			<article class="uji-tema" data-vista-panel="tema">
-				<header class="uji-tema__cab">
-					<span class="uji-tema__eyebrow">Tema <?php echo esc_html( $tema->numero ); ?></span>
-					<h1 class="uji-tema__titulo"><?php echo esc_html( $tema->titulo ); ?></h1>
-				</header>
-
 				<?php foreach ( $raiz as $indice_seccion => $seccion ) : ?>
 					<?php echo uji_content_render_seccion( $seccion, $indice_seccion + 1 ); ?>
 				<?php endforeach; ?>
