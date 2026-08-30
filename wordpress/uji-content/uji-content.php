@@ -16,4 +16,10 @@ require_once __DIR__ . '/includes/shortcode-lector.php';
 require_once __DIR__ . '/seeds/tema-9.php';
 require_once __DIR__ . '/seeds/tema-9-esquemas.php';
 
-register_activation_hook( __FILE__, 'uji_content_crear_tablas' );
+register_activation_hook( __FILE__, 'uji_content_activar' );
+
+function uji_content_activar() {
+	uji_content_crear_tablas();
+	uji_content_seed_tema_9();
+	uji_content_seed_tema_9_esquemas();
+}
