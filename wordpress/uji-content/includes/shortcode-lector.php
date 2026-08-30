@@ -1,0 +1,293 @@
+<?php
+/**
+ * uji-content — shortcode [uji_lector tema="9" temario="ujier-cortes-generales"]
+ *
+ * Pinta el lector de temario a partir de uji_temas / uji_nodos /
+ * uji_esquemas / uji_glosario. El HTML resultante es el mismo que
+ * consumen uji-lector.css / uji-articulos.js / uji-lector.js.
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+add_shortcode( 'uji_lector', 'uji_content_shortcode_lector' );
+
+function uji_content_shortcode_lector( $atts ) {
+	global $wpdb;
+
+	$atts = shortcode_atts( [
+		'tema'    => '',
+		'temario' => '',
+	], $atts, 'uji_lector' );
+
+	if ( '' === $atts['tema'] ) {
+		return '<p><em>uji_lector: falta el atributo "tema".</em></p>';
+	}
+
+	$temas_tbl = $wpdb->prefix . 'uji_temas';
+	$nodos_tbl = $wpdb->prefix . 'uji_nodos';
+	$esq_tbl   = $wpdb->prefix . 'uji_esquemas';
+	$glo_tbl   = $wpdb->prefix . 'uji_glosario';
+
+	if ( '' !== $atts['temario'] ) {
+		$temarios_tbl = $wpdb->prefix . 'uji_temarios';
+		$tema         = $wpdb->get_row( $wpdb->prepare(
+			"SELECT t.* FROM {$temas_tbl} t
+			 INNER JOIN {$temarios_tbl} tm ON tm.id = t.temario_id
+			 WHERE tm.slug = %s AND t.numero = %d",
+			$atts['temario'], (int) $atts['tema']
+		) );
+	} else {
+		$tema = $wpdb->get_row( $wpdb->prepare(
+			"SELECT * FROM {$temas_tbl} WHERE numero = %d ORDER BY id LIMIT 1",
+			(int) $atts['tema']
+		) );
+	}
+
+	if ( ! $tema ) {
+		return '<p><em>Tema no encontrado.</em></p>';
+	}
+
+	$nodos_planos = $wpdb->get_results( $wpdb->prepare(
+		"SELECT * FROM {$nodos_tbl} WHERE tema_id = %d ORDER BY orden, id",
+		$tema->id
+	) );
+
+	$por_id = [];
+	foreach ( $nodos_planos as $n ) {
+		$n->hijos       = [];
+		$por_id[ $n->id ] = $n;
+	}
+	$raiz = [];
+	foreach ( $nodos_planos as $n ) {
+		if ( $n->parent_id && isset( $por_id[ $n->parent_id ] ) ) {
+			$por_id[ $n->parent_id ]->hijos[] = $n;
+		} else {
+			$raiz[] = $n;
+		}
+	}
+
+	$esquemas_filas = $wpdb->get_results( $wpdb->prepare(
+		"SELECT nodo_id, contenido_html FROM {$esq_tbl} WHERE tema_id = %d",
+		$tema->id
+	) );
+
+	$esquemas     = []; // ref-visible => html
+	$esquema_tema = '';
+	foreach ( $esquemas_filas as $e ) {
+		if ( null === $e->nodo_id ) {
+			$esquema_tema = $e->contenido_html;
+			continue;
+		}
+		if ( isset( $por_id[ $e->nodo_id ] ) ) {
+			$ref               = uji_content_ref( $tema->numero, $por_id[ $e->nodo_id ] );
+			$esquemas[ $ref ]  = $e->contenido_html;
+		}
+	}
+	if ( '' !== $esquema_tema ) {
+		$esquemas[ (string) $tema->numero ] = $esquema_tema;
+	}
+
+	$glosario = $wpdb->get_results( $wpdb->prepare(
+		"SELECT termino, definicion_html FROM {$glo_tbl} WHERE tema_id = %d ORDER BY orden, id",
+		$tema->id
+	) );
+
+	uji_content_enqueue_lector_assets();
+
+	ob_start();
+	?>
+	<div class="uji-progreso"><i id="uji-barra"></i></div>
+	<div class="uji-lector">
+		<aside class="uji-rail">
+			<div class="uji-rail__tabs" role="tablist">
+				<button type="button" class="uji-tab activo" data-panel="indice" role="tab" aria-selected="true">Índice</button>
+				<button type="button" class="uji-tab" data-panel="esquema" role="tab" aria-selected="false">Esquema</button>
+			</div>
+			<div class="uji-panel" data-panel="indice">
+				<nav class="uji-indice" aria-label="Índice del tema">
+					<p class="uji-indice__tit">En este tema</p>
+					<?php echo uji_content_render_indice( $raiz, $tema->numero ); ?>
+				</nav>
+			</div>
+			<div class="uji-panel" data-panel="esquema" hidden>
+				<div class="uji-esq">
+					<p class="uji-esq__cab"><span class="uji-esq__ambito">Esquema</span></p>
+					<div class="uji-esq__cuerpo"></div>
+				</div>
+			</div>
+			<div class="uji-herr">
+				<button class="uji-btn" id="uji-menos" title="Reducir el texto">A−</button>
+				<button class="uji-btn" id="uji-mas" title="Aumentar el texto">A+</button>
+				<button class="uji-btn" id="uji-imprimir">Imprimir</button>
+			</div>
+		</aside>
+
+		<div class="uji-cuerpo">
+			<article class="uji-tema">
+				<header class="uji-tema__cab">
+					<span class="uji-tema__eyebrow">Tema <?php echo esc_html( $tema->numero ); ?></span>
+					<h1 class="uji-tema__titulo"><?php echo esc_html( $tema->titulo ); ?></h1>
+				</header>
+
+				<?php foreach ( $raiz as $indice_seccion => $seccion ) : ?>
+					<?php echo uji_content_render_seccion( $seccion, $indice_seccion + 1 ); ?>
+				<?php endforeach; ?>
+
+				<?php if ( $glosario ) : ?>
+					<section class="uji-glosario">
+						<h2 class="uji-sec__titulo">Glosario</h2>
+						<dl class="uji-dl">
+							<?php foreach ( $glosario as $g ) : ?>
+								<div class="uji-term">
+									<dt><?php echo esc_html( $g->termino ); ?></dt>
+									<dd><?php echo $g->definicion_html; // contenido editorial, no de usuario ?></dd>
+								</div>
+							<?php endforeach; ?>
+						</dl>
+					</section>
+				<?php endif; ?>
+			</article>
+		</div>
+	</div>
+
+	<script>
+		window.UJI_TEMA     = <?php echo wp_json_encode( (string) $tema->numero ); ?>;
+		window.UJI_ESQUEMAS = <?php echo wp_json_encode( $esquemas ); ?>;
+		window.UJI_CFG      = { endpoint: <?php echo wp_json_encode( rest_url( 'uji/v1/articulo' ) ); ?> };
+	</script>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * Referencia de navegación de un nodo, ej. "9.1" (sección/epígrafe) o "9.1_a" (con letra).
+ */
+function uji_content_ref( $tema_numero, $nodo ) {
+	$ref = $tema_numero . '.' . $nodo->numero;
+	if ( ! empty( $nodo->letra ) ) {
+		$ref .= '_' . $nodo->letra;
+	}
+	return $ref;
+}
+
+function uji_content_anchor_id( $nodo ) {
+	$base = 'n-' . str_replace( '.', '-', $nodo->numero );
+	if ( ! empty( $nodo->letra ) ) {
+		$base .= '-' . strtolower( $nodo->letra );
+	}
+	return $base;
+}
+
+/**
+ * Índice lateral: solo baja hasta "epigrafe" (2 niveles). Apartados y
+ * subapartados se leen en el cuerpo pero no aparecen en el árbol lateral.
+ */
+function uji_content_render_indice( array $secciones, $tema_numero ) {
+	$html = '<ol>';
+	foreach ( $secciones as $seccion ) {
+		$ref        = uji_content_ref( $tema_numero, $seccion );
+		$id         = uji_content_anchor_id( $seccion );
+		$color_attr = $seccion->color_clase ? ' class="uji-sec--' . esc_attr( $seccion->color_clase ) . '"' : '';
+
+		$html .= '<li' . $color_attr . '>';
+		$html .= '<a href="#' . esc_attr( $id ) . '" data-ref="' . esc_attr( $ref ) . '" data-titulo="' . esc_attr( $seccion->titulo ) . '">';
+		$html .= '<span class="uji-num">' . esc_html( $seccion->numero ) . '</span><span>' . esc_html( $seccion->titulo ) . '</span></a>';
+		$html .= '<div class="uji-acciones"><a class="uji-accion uji-accion--test" href="/tests/?ep_tema=' . esc_attr( $tema_numero ) . '&amp;ap=' . esc_attr( $seccion->numero ) . '">Tests</a></div>';
+
+		$epigrafes = [];
+		foreach ( $seccion->hijos as $hijo ) {
+			if ( 'epigrafe' === $hijo->tipo ) {
+				$epigrafes[] = $hijo;
+			}
+		}
+
+		if ( $epigrafes ) {
+			$html .= '<ol>';
+			foreach ( $epigrafes as $epigrafe ) {
+				$ref_e = uji_content_ref( $tema_numero, $epigrafe );
+				$id_e  = uji_content_anchor_id( $epigrafe );
+				$html .= '<li>';
+				$html .= '<a href="#' . esc_attr( $id_e ) . '" data-ref="' . esc_attr( $ref_e ) . '" data-titulo="' . esc_attr( $epigrafe->titulo ) . '">';
+				$html .= '<span class="uji-num">' . esc_html( $epigrafe->numero ) . '</span><span>' . esc_html( $epigrafe->titulo ) . '</span></a>';
+				$html .= '<div class="uji-acciones"><a class="uji-accion uji-accion--test" href="/tests/?ep_tema=' . esc_attr( $tema_numero ) . '&amp;ap=' . esc_attr( $epigrafe->numero ) . '">Tests</a></div>';
+				$html .= '</li>';
+			}
+			$html .= '</ol>';
+		}
+		$html .= '</li>';
+	}
+	$html .= '</ol>';
+	return $html;
+}
+
+function uji_content_render_seccion( $seccion, $indice_visible ) {
+	$id    = uji_content_anchor_id( $seccion );
+	$color = $seccion->color_clase ? ' uji-sec--' . esc_attr( $seccion->color_clase ) : '';
+
+	$html  = '<section class="uji-sec' . $color . '" id="' . esc_attr( $id ) . '">';
+	$html .= '<header class="uji-sec__cab"><span class="uji-sec__n" aria-hidden="true">' . esc_html( $indice_visible ) . '</span>';
+	$html .= '<h2 class="uji-sec__titulo">' . esc_html( $seccion->titulo ) . '</h2></header>';
+
+	if ( ! empty( $seccion->contenido_html ) ) {
+		$html .= $seccion->contenido_html; // texto introductorio de la sección, si lo hay
+	}
+
+	foreach ( $seccion->hijos as $hijo ) {
+		$html .= uji_content_render_nodo( $hijo );
+	}
+
+	$html .= '</section>';
+	return $html;
+}
+
+/**
+ * Epígrafe -> caja "uji-ap" (numerada). Apartado/subapartado -> caja "uji-sub" (con letra si la tiene).
+ * Recursivo: un apartado puede contener subapartados anidados.
+ */
+function uji_content_render_nodo( $nodo ) {
+	$id = uji_content_anchor_id( $nodo );
+
+	if ( 'epigrafe' === $nodo->tipo ) {
+		$html  = '<section class="uji-ap" id="' . esc_attr( $id ) . '">';
+		$html .= '<div class="uji-ap__n"><span>' . esc_html( $nodo->numero ) . '</span></div>';
+		$html .= '<div class="uji-ap__cuerpo">';
+		$html .= '<h3 class="uji-ap__titulo">' . esc_html( $nodo->titulo ) . '</h3>';
+		if ( ! empty( $nodo->contenido_html ) ) {
+			$html .= $nodo->contenido_html;
+		}
+		foreach ( $nodo->hijos as $hijo ) {
+			$html .= uji_content_render_nodo( $hijo );
+		}
+		$html .= '</div></section>';
+		return $html;
+	}
+
+	// apartado / subapartado
+	$letra_visible = ! empty( $nodo->letra ) ? strtoupper( $nodo->letra ) : '';
+	$html  = '<section class="uji-sub" id="' . esc_attr( $id ) . '">';
+	$html .= '<h4 class="uji-sub__titulo">';
+	if ( $letra_visible ) {
+		$html .= '<span class="uji-sub__letra">' . esc_html( $letra_visible ) . '</span>';
+	}
+	$html .= esc_html( $nodo->titulo ) . '</h4>';
+	if ( ! empty( $nodo->contenido_html ) ) {
+		$html .= $nodo->contenido_html;
+	}
+	foreach ( $nodo->hijos as $hijo ) {
+		$html .= uji_content_render_nodo( $hijo );
+	}
+	$html .= '</section>';
+	return $html;
+}
+
+function uji_content_enqueue_lector_assets() {
+	static $hecho = false;
+	if ( $hecho ) {
+		return;
+	}
+	$hecho = true;
+
+	wp_enqueue_style( 'uji-lector', UJI_CONTENT_URL . 'assets/uji-lector.css', [], UJI_CONTENT_VERSION );
+	wp_enqueue_script( 'uji-articulos', UJI_CONTENT_URL . 'assets/uji-articulos.js', [], UJI_CONTENT_VERSION, true );
+	wp_enqueue_script( 'uji-lector', UJI_CONTENT_URL . 'assets/uji-lector.js', [ 'uji-articulos' ], UJI_CONTENT_VERSION, true );
+}
