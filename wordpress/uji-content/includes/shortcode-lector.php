@@ -87,7 +87,7 @@ function uji_content_shortcode_lector( $atts ) {
 
 	$nodos_planos = $wpdb->get_results( $wpdb->prepare(
 		"SELECT * FROM {$nodos_tbl} WHERE tema_id = %d ORDER BY orden, id",
-		$tema->id
+		$tema->numero
 	) );
 
 	$por_id = [];
@@ -106,7 +106,7 @@ function uji_content_shortcode_lector( $atts ) {
 
 	$esquemas_filas = $wpdb->get_results( $wpdb->prepare(
 		"SELECT nodo_id, contenido_html FROM {$esq_tbl} WHERE tema_id = %d",
-		$tema->id
+		$tema->numero
 	) );
 
 	$esquemas     = []; // ref-visible => html
@@ -127,7 +127,7 @@ function uji_content_shortcode_lector( $atts ) {
 
 	$glosario = $wpdb->get_results( $wpdb->prepare(
 		"SELECT termino, definicion_html FROM {$glo_tbl} WHERE tema_id = %d ORDER BY orden, id",
-		$tema->id
+		$tema->numero
 	) );
 
 	uji_content_enqueue_lector_assets();

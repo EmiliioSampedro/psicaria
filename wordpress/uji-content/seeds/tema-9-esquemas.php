@@ -294,23 +294,25 @@ function uji_content_seed_tema_9_esquemas() {
 	$nodos_tbl    = $wpdb->prefix . 'uji_nodos';
 	$esq_tbl      = $wpdb->prefix . 'uji_esquemas';
 
+	$numero_tema = 9; // uji_esquemas.tema_id guarda el número del tema (9), no el id interno de uji_temas
+
 	$tema_id = $wpdb->get_var( $wpdb->prepare(
 		"SELECT t.id FROM {$temas_tbl} t
 		 INNER JOIN {$temarios_tbl} tm ON tm.id = t.temario_id
 		 WHERE tm.slug = %s AND t.numero = %d",
-		'ujier-cortes-generales', 9
+		'ujier-cortes-generales', $numero_tema
 	) );
 
 	if ( ! $tema_id ) {
 		return null; // hay que sembrar antes el tema y sus nodos
 	}
 
-	$wpdb->delete( $esq_tbl, [ 'tema_id' => $tema_id ] );
+	$wpdb->delete( $esq_tbl, [ 'tema_id' => $numero_tema ] );
 
 	$datos = uji_content_tema_9_esquemas();
 
 	$wpdb->insert( $esq_tbl, [
-		'tema_id'        => $tema_id,
+		'tema_id'        => $numero_tema,
 		'nodo_id'        => null,
 		'contenido_html' => $datos['tema'],
 	] );
@@ -318,11 +320,11 @@ function uji_content_seed_tema_9_esquemas() {
 	foreach ( $datos['secciones'] as $numero => $html ) {
 		$seccion_id = $wpdb->get_var( $wpdb->prepare(
 			"SELECT id FROM {$nodos_tbl} WHERE tema_id = %d AND tipo = 'seccion' AND numero = %s",
-			$tema_id, (string) $numero
+			$numero_tema, (string) $numero
 		) );
 		if ( $seccion_id ) {
 			$wpdb->insert( $esq_tbl, [
-				'tema_id'        => $tema_id,
+				'tema_id'        => $numero_tema,
 				'nodo_id'        => $seccion_id,
 				'contenido_html' => $html,
 			] );

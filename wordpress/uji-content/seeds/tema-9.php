@@ -757,8 +757,10 @@ function uji_content_seed_tema_9() {
 		$temario_id = $wpdb->insert_id;
 	}
 
+	$numero_tema = 9; // uji_nodos.tema_id guarda el número del tema (9), no el id interno de uji_temas
+
 	$tema_id = $wpdb->get_var( $wpdb->prepare(
-		"SELECT id FROM {$temas_tbl} WHERE temario_id = %d AND numero = %d", $temario_id, 9
+		"SELECT id FROM {$temas_tbl} WHERE temario_id = %d AND numero = %d", $temario_id, $numero_tema
 	) );
 	if ( $tema_id ) {
 		$wpdb->update( $temas_tbl, [
@@ -781,13 +783,13 @@ function uji_content_seed_tema_9() {
 	}
 
 	// reseeding idempotente: fuera los nodos anteriores de este tema
-	$wpdb->delete( $nodos_tbl, [ 'tema_id' => $tema_id ] );
+	$wpdb->delete( $nodos_tbl, [ 'tema_id' => $numero_tema ] );
 
 	$orden_seccion = 0;
 	foreach ( uji_content_tema_9_secciones() as $seccion ) {
 		$orden_seccion++;
 		$wpdb->insert( $nodos_tbl, [
-			'tema_id'     => $tema_id,
+			'tema_id'     => $numero_tema,
 			'parent_id'   => null,
 			'tipo'        => 'seccion',
 			'numero'      => $seccion['numero'],
@@ -801,7 +803,7 @@ function uji_content_seed_tema_9() {
 		foreach ( $seccion['epigrafes'] as $epigrafe ) {
 			$orden_epigrafe++;
 			$wpdb->insert( $nodos_tbl, [
-				'tema_id'        => $tema_id,
+				'tema_id'        => $numero_tema,
 				'parent_id'      => $seccion_id,
 				'tipo'           => 'epigrafe',
 				'numero'         => $epigrafe['numero'],
@@ -815,7 +817,7 @@ function uji_content_seed_tema_9() {
 			foreach ( $epigrafe['subapartados'] ?? [] as $sub ) {
 				$orden_sub++;
 				$wpdb->insert( $nodos_tbl, [
-					'tema_id'        => $tema_id,
+					'tema_id'        => $numero_tema,
 					'parent_id'      => $epigrafe_id,
 					'tipo'           => 'subapartado',
 					'numero'         => $epigrafe['numero'],
