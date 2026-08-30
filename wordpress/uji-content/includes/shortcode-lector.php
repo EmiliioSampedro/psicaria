@@ -22,7 +22,7 @@ add_action( 'wp_enqueue_scripts', 'uji_content_maybe_enqueue_lector_assets' );
 function uji_content_maybe_enqueue_lector_assets() {
 	if ( is_singular() ) {
 		$post = get_post();
-		if ( $post && has_shortcode( $post->post_content, 'uji_lector' ) ) {
+		if ( $post && ( has_shortcode( $post->post_content, 'uji_lector' ) || has_shortcode( $post->post_content, 'uji_temas_indice' ) ) ) {
 			uji_content_enqueue_lector_assets();
 		}
 	}
@@ -39,14 +39,21 @@ function uji_content_maybe_enqueue_lector_assets() {
 add_filter( 'the_content', 'uji_content_strip_wrapping_p', 20 );
 
 function uji_content_strip_wrapping_p( $content ) {
-	if ( false === strpos( $content, 'uji-progreso' ) ) {
-		return $content;
+	if ( false !== strpos( $content, 'uji-progreso' ) ) {
+		$content = preg_replace(
+			'#<p[^>]*>\s*(<div class="uji-progreso">.*?</script>)\s*</p>#s',
+			'$1',
+			$content
+		);
 	}
-	return preg_replace(
-		'#<p[^>]*>\s*(<div class="uji-progreso">.*?</script>)\s*</p>#s',
-		'$1',
-		$content
-	);
+	if ( false !== strpos( $content, 'uji-lector--indice' ) ) {
+		$content = preg_replace(
+			'#<p[^>]*>\s*(<div class="uji-lector uji-lector--indice">.*?</ul>\s*</div>)\s*</p>#s',
+			'$1',
+			$content
+		);
+	}
+	return $content;
 }
 
 function uji_content_shortcode_lector( $atts ) {
@@ -56,6 +63,12 @@ function uji_content_shortcode_lector( $atts ) {
 		'tema'    => '',
 		'temario' => '',
 	], $atts, 'uji_lector' );
+
+	// permite una sola página del lector para todos los temas, eligiendo
+	// cuál mostrar por la URL (?tema=9), como hace la grilla de uji_temas_indice
+	if ( '' === $atts['tema'] && isset( $_GET['tema'] ) ) {
+		$atts['tema'] = sanitize_text_field( wp_unslash( $_GET['tema'] ) );
+	}
 
 	if ( '' === $atts['tema'] ) {
 		return '<p><em>uji_lector: falta el atributo "tema".</em></p>';
@@ -203,6 +216,61 @@ function uji_content_shortcode_lector( $atts ) {
 		window.UJI_ESQUEMAS = <?php echo wp_json_encode( $esquemas ); ?>;
 		window.UJI_CFG      = { endpoint: <?php echo wp_json_encode( rest_url( 'uji/v1/articulo' ) ); ?> };
 	</script>
+	<?php
+	return ob_get_clean();
+}
+
+add_shortcode( 'uji_temas_indice', 'uji_content_shortcode_temas_indice' );
+
+/**
+ * [uji_temas_indice temario="ujier-cortes-generales"] — grilla con todos los
+ * temas publicados, cada uno enlazando a la misma página del lector con
+ * ?tema=N (ver el fallback a $_GET['tema'] en uji_content_shortcode_lector).
+ */
+function uji_content_shortcode_temas_indice( $atts ) {
+	global $wpdb;
+
+	$atts = shortcode_atts( [
+		'temario' => '',
+	], $atts, 'uji_temas_indice' );
+
+	$temas_tbl = $wpdb->prefix . 'uji_temas';
+
+	if ( '' !== $atts['temario'] ) {
+		$temarios_tbl = $wpdb->prefix . 'uji_temarios';
+		$temas        = $wpdb->get_results( $wpdb->prepare(
+			"SELECT t.* FROM {$temas_tbl} t
+			 INNER JOIN {$temarios_tbl} tm ON tm.id = t.temario_id
+			 WHERE tm.slug = %s AND t.estado = 'publicado'
+			 ORDER BY t.orden, t.numero",
+			$atts['temario']
+		) );
+	} else {
+		$temas = $wpdb->get_results(
+			"SELECT * FROM {$temas_tbl} WHERE estado = 'publicado' ORDER BY orden, numero"
+		);
+	}
+
+	if ( ! $temas ) {
+		return '<p><em>Todavía no hay temas publicados.</em></p>';
+	}
+
+	$base_url = get_permalink();
+
+	ob_start();
+	?>
+	<div class="uji-lector uji-lector--indice">
+		<ul class="uji-temario">
+			<?php foreach ( $temas as $tema ) : ?>
+				<li class="uji-temario__item">
+					<a href="<?php echo esc_url( add_query_arg( 'tema', $tema->numero, $base_url ) ); ?>">
+						<span class="uji-temario__n"><?php echo esc_html( $tema->numero ); ?></span>
+						<span class="uji-temario__tit"><?php echo esc_html( $tema->titulo ); ?></span>
+					</a>
+				</li>
+			<?php endforeach; ?>
+		</ul>
+	</div>
 	<?php
 	return ob_get_clean();
 }
