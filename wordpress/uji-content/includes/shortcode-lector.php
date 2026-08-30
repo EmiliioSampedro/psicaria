@@ -64,17 +64,28 @@ function uji_content_shortcode_lector( $atts ) {
 		'temario' => '',
 	], $atts, 'uji_lector' );
 
+	$temas_tbl = $wpdb->prefix . 'uji_temas';
+
 	// una sola página del lector para todos los temas: si no se fija el
 	// atributo, se elige por la URL (?tema=9), como hace [uji_temas_indice]
 	if ( '' === $atts['tema'] && isset( $_GET['tema'] ) ) {
 		$atts['tema'] = sanitize_text_field( wp_unslash( $_GET['tema'] ) );
 	}
 
+	// si aún así no hay tema (primera visita, sin nada en la URL todavía),
+	// nunca dejar la página en blanco con un mensaje de error: se muestra
+	// el primer tema publicado que exista (hoy el 9; cuando haya más temas
+	// será el 1). uji-lector.js puede luego redirigir por encima de esto
+	// si el visitante ya había leído otro tema antes (localStorage).
 	if ( '' === $atts['tema'] ) {
-		return '<p><em>uji_lector: falta el atributo "tema".</em></p>';
+		$atts['tema'] = $wpdb->get_var(
+			"SELECT numero FROM {$temas_tbl} WHERE estado = 'publicado' ORDER BY orden, numero LIMIT 1"
+		);
 	}
 
-	$temas_tbl = $wpdb->prefix . 'uji_temas';
+	if ( '' === $atts['tema'] || null === $atts['tema'] ) {
+		return '<p><em>Todavía no hay ningún tema publicado.</em></p>';
+	}
 	$nodos_tbl = $wpdb->prefix . 'uji_nodos';
 	$esq_tbl   = $wpdb->prefix . 'uji_esquemas';
 	$glo_tbl   = $wpdb->prefix . 'uji_glosario';

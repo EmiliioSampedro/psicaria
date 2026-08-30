@@ -3,17 +3,21 @@
   // anterior al recargar: interferiría con el "retomar sección" de abajo.
   try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch(e){}
 
-  // si esta carga no tiene tema (solo se ve la grilla de [uji_temas_indice],
-  // porque se entró a la página sin ?tema= en la URL), retomar el último
-  // tema visitado en vez de dejar el mensaje de "falta el atributo tema".
   if (typeof window.UJI_TEMA === 'undefined') {
+    return; // no hay lector en esta carga (p. ej. todavía no hay ningún tema publicado)
+  }
+
+  // si se entró sin ?tema= en la URL, el servidor ya eligió uno por
+  // defecto (el primer tema publicado); si este visitante ya había leído
+  // antes uno distinto, retomar ese en vez de quedarnos en el por defecto.
+  if (!/[?&]tema=/.test(location.search)) {
     var recordado = null;
     try { recordado = localStorage.getItem('uji-ultimo-tema'); } catch(e){}
-    if (recordado && !/[?&]tema=/.test(location.search)) {
+    if (recordado && recordado !== String(window.UJI_TEMA)) {
       var sep = location.search ? '&' : '?';
       location.replace(location.pathname + location.search + sep + 'tema=' + encodeURIComponent(recordado));
+      return;
     }
-    return; // no hay lector en esta carga: nada más que hacer
   }
 
   document.querySelector('.uji-lector').classList.add('uji-js');
