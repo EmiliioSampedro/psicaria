@@ -61,53 +61,72 @@
   destinos.forEach(function(d){ if(d) obs.observe(d); });
   pintarEsquema(enlaces.length ? enlaces[0].getAttribute('data-ref') : null);
 
-  // ---- pestañas: Tema / Índice / Esquema
-  // En escritorio el lateral y el contenido se ven siempre los dos a la vez
-  // (las pestañas solo cambian qué se ve DENTRO del lateral). En móvil son
-  // tres vistas excluyentes: solo se ve una de las tres a la vez.
+  // ---- pestañas Tema/Esquema de la zona de contenido: "la caja grande".
+  // Se definen antes que la lógica de pestañas de abajo porque en móvil
+  // las pestañas del lateral (Tema/Esquema/Índice) reutilizan este mismo
+  // conmutador en vez de duplicar un segundo panel de esquema.
+  var vistaTabs = [].slice.call(document.querySelectorAll('.uji-vista-tab'));
+  var vistaPaneles = [].slice.call(document.querySelectorAll('[data-vista-panel]'));
+  function activarVistaPanel(cual){
+    vistaTabs.forEach(function(o){
+      var on = o.getAttribute('data-vista') === cual;
+      o.classList.toggle('activo', on);
+      o.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    vistaPaneles.forEach(function(p){
+      p.hidden = p.getAttribute('data-vista-panel') !== cual;
+    });
+  }
+  vistaTabs.forEach(function(t){
+    t.addEventListener('click', function(){ activarVistaPanel(t.getAttribute('data-vista')); });
+  });
+
+  // ---- pestañas: Tema / Esquema / Índice
+  // En escritorio el lateral (Índice/Esquema) y el contenido (Tema/Esquema)
+  // se ven siempre los dos a la vez, cada uno con su propio conmutador.
+  // En móvil solo cabe "una caja": estas tres pestañas pasan a controlar
+  // directamente la caja grande (Tema y Esquema, vía activarVistaPanel) o
+  // el lateral reducido a solo Índice — nada se muestra dos veces.
   function esMovil(){ return window.matchMedia('(max-width:940px)').matches; }
 
   var tabs = [].slice.call(document.querySelectorAll('.uji-tab'));
   var panelesLateral = [].slice.call(document.querySelectorAll('.uji-rail .uji-panel'));
-  var panelLateral = 'indice';
+  var panelLateral = 'indice'; // escritorio: qué panel del lateral se ve
   try {
     var g = localStorage.getItem('uji-panel');
     if (g === 'esquema' || g === 'indice') panelLateral = g;
   } catch(e){}
-  var vista = 'tema';
+  var vistaMovil = 'tema'; // móvil: qué pestaña de las tres está activa
 
   function aplicarVista(){
     var movil = esMovil();
     tabs.forEach(function(t){
       var p = t.getAttribute('data-panel');
-      var on;
-      if (p === 'tema') {
-        on = vista === 'tema';
-      } else if (movil) {
-        on = vista !== 'tema' && p === panelLateral;
-      } else {
-        // en escritorio "tema" no existe como vista aparte: el panel
-        // lateral activo se marca siempre, independientemente de vista.
-        on = p === panelLateral;
-      }
+      var on = movil ? (p === vistaMovil) : (p !== 'tema' && p === panelLateral);
       t.classList.toggle('activo', on);
       t.setAttribute('aria-selected', on ? 'true' : 'false');
     });
+    var panelMostrado = movil ? 'indice' : panelLateral;
     panelesLateral.forEach(function(p){
-      p.hidden = p.getAttribute('data-panel') !== panelLateral;
+      p.hidden = p.getAttribute('data-panel') !== panelMostrado;
     });
-    if (cuerpo) cuerpo.hidden = movil && vista !== 'tema';
-    if (railCuerpo) railCuerpo.hidden = movil && vista === 'tema';
-    lector.classList.toggle('uji-modo-esquema', panelLateral === 'esquema');
+    if (movil) {
+      if (cuerpo) cuerpo.hidden = vistaMovil === 'indice';
+      if (railCuerpo) railCuerpo.hidden = vistaMovil !== 'indice';
+      if (vistaMovil !== 'indice') activarVistaPanel(vistaMovil);
+    } else {
+      if (cuerpo) cuerpo.hidden = false;
+      if (railCuerpo) railCuerpo.hidden = false;
+    }
+    lector.classList.toggle('uji-modo-esquema', !movil && panelLateral === 'esquema');
   }
 
   tabs.forEach(function(t){
     t.addEventListener('click', function(){
       var p = t.getAttribute('data-panel');
-      if (p === 'tema') {
-        vista = 'tema';
-      } else {
-        vista = 'otro';
+      if (esMovil()) {
+        vistaMovil = p;
+      } else if (p !== 'tema') {
         panelLateral = p;
         try { localStorage.setItem('uji-panel', p); } catch(e){}
       }
@@ -115,35 +134,16 @@
     });
   });
 
-  // al tocar un enlace del índice en móvil, pasar a la vista "Tema" para
+  // al tocar un enlace del índice en móvil, pasar a la pestaña "Tema" para
   // que el salto a la sección/epígrafe se vea (si no, el destino queda
   // oculto detrás del panel de índice y el navegador no puede desplazarse).
   enlaces.forEach(function(a){
     a.addEventListener('click', function(){
-      if (esMovil()) { vista = 'tema'; aplicarVista(); }
+      if (esMovil()) { vistaMovil = 'tema'; aplicarVista(); }
     });
   });
 
   aplicarVista();
-
-  // ---- pestañas Tema/Esquema de la zona de contenido (independientes de
-  // las del lateral: aquí "Esquema" muestra el esquema a todo el ancho de
-  // la columna de contenido, no en el hueco estrecho del lateral).
-  var vistaTabs = [].slice.call(document.querySelectorAll('.uji-vista-tab'));
-  var vistaPaneles = [].slice.call(document.querySelectorAll('[data-vista-panel]'));
-  vistaTabs.forEach(function(t){
-    t.addEventListener('click', function(){
-      var cual = t.getAttribute('data-vista');
-      vistaTabs.forEach(function(o){
-        var on = o === t;
-        o.classList.toggle('activo', on);
-        o.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      vistaPaneles.forEach(function(p){
-        p.hidden = p.getAttribute('data-vista-panel') !== cual;
-      });
-    });
-  });
 
   var pasos = [15.5, 16.5, 17.5, 19, 20.5], n = 1;
   try { var g = localStorage.getItem('uji-tam'); if(g !== null) n = Math.max(0, Math.min(4, +g)); } catch(e){}

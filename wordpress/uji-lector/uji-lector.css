@@ -628,6 +628,9 @@ body{margin:0;background:#F2F1EC}
 }
 .uji-vista-tab:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
 [data-vista-panel][hidden]{display:none!important}
+/* en móvil, Tema/Esquema ya se eligen con las pestañas del lateral
+   (Tema-Esquema-Índice); estas de aquí duplicarían esa misma elección */
+@media (max-width:940px){.uji-cuerpo__tabs{display:none}}
 @media print{.uji-cuerpo__tabs{display:none!important}}
 
 /* ---------- esquema a todo el ancho de la columna de contenido ---------- */
