@@ -14,7 +14,6 @@ require_once __DIR__ . '/includes/schema.php';
 require_once __DIR__ . '/includes/rest-articulo.php';
 require_once __DIR__ . '/includes/shortcode-lector.php';
 require_once __DIR__ . '/seeds/tema-9.php';
-require_once __DIR__ . '/seeds/tema-9-esquemas.php';
 
 register_activation_hook( __FILE__, 'uji_content_activar' );
 
@@ -25,11 +24,11 @@ function uji_content_activar() {
 
 	// solo la primera vez: si el Tema 9 ya existe (porque ya se sembró antes,
 	// o porque se ha editado su contenido a mano), no lo tocamos, para no
-	// pisar ediciones manuales en cada reinstalación del plugin.
+	// pisar ediciones manuales en cada reinstalación del plugin. Los esquemas
+	// ya no se siembran aquí: se editan directamente en la tabla uji_esquemas.
 	$temas_tbl = $wpdb->prefix . 'uji_temas';
 	$ya_existe = $wpdb->get_var( "SELECT id FROM {$temas_tbl} WHERE numero = 9" );
 	if ( ! $ya_existe ) {
 		uji_content_seed_tema_9();
-		uji_content_seed_tema_9_esquemas();
 	}
 }
