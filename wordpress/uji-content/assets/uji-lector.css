@@ -103,8 +103,8 @@
 .uji-lector{
   background:var(--uji-bg);color:var(--uji-tinta);
   font-family:var(--uji-display);
-  display:grid;grid-template-columns:minmax(0,278px) minmax(0,1fr);
-  gap:32px;max-width:1280px;margin:0 auto;padding:32px 24px 90px;
+  display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);
+  gap:32px;max-width:1600px;margin:0 auto;padding:32px 24px 90px;
   align-items:start;box-sizing:border-box;
 }
 .uji-lector *,.uji-lector *::before,.uji-lector *::after,
@@ -301,7 +301,7 @@
 .uji-dl dd > p{
   font-family:var(--uji-texto);font-size:var(--uji-cuerpo-tam);
   line-height:1.72;color:var(--uji-tinta);margin:0 0 14px;
-  max-width:66ch;text-wrap:pretty;
+  text-wrap:pretty;
 }
 .uji-tema strong{font-weight:600}
 .uji-tema em{font-style:italic}
@@ -309,7 +309,7 @@
 /* listas dentro de un panel */
 .uji-lista{
   font-family:var(--uji-texto);font-size:calc(var(--uji-cuerpo-tam) - .5px);
-  line-height:1.58;margin:0 0 16px;max-width:66ch;
+  line-height:1.58;margin:0 0 16px;
   background:var(--uji-papel-2);border:1px solid var(--uji-borde);
   border-left:2px solid var(--sc);border-radius:0 10px 10px 0;
   padding:12px 16px 12px 34px;
@@ -328,7 +328,7 @@
 .uji-cita{
   position:relative;margin:20px 0;padding:16px 18px 15px 46px;
   background:var(--uji-cita-fondo);border:1px solid var(--uji-cita-borde);
-  border-left:3px solid var(--uji-cita);border-radius:0 10px 10px 0;max-width:68ch;
+  border-left:3px solid var(--uji-cita);border-radius:0 10px 10px 0;
 }
 .uji-cita::before{
   content:"\201C";position:absolute;left:14px;top:8px;
