@@ -240,6 +240,7 @@ function uji_content_shortcode_temas_indice( $atts ) {
 	);
 	$publicados = array_map( 'intval', $publicados );
 
+	$actual   = isset( $_GET['tema'] ) ? (int) $_GET['tema'] : 0;
 	$base_url = get_permalink();
 
 	ob_start();
@@ -248,7 +249,8 @@ function uji_content_shortcode_temas_indice( $atts ) {
 		<nav class="uji-temario-mini" aria-label="Índice de temas">
 			<?php for ( $n = 1; $n <= $total_temas; $n++ ) : ?>
 				<?php if ( in_array( $n, $publicados, true ) ) : ?>
-					<a class="uji-temario-mini__n" href="<?php echo esc_url( add_query_arg( 'tema', $n, $base_url ) ); ?>"><?php echo esc_html( $n ); ?></a>
+					<?php $clase = 'uji-temario-mini__n' . ( $n === $actual ? ' uji-temario-mini__n--actual' : '' ); ?>
+					<a class="<?php echo esc_attr( $clase ); ?>" href="<?php echo esc_url( add_query_arg( 'tema', $n, $base_url ) ); ?>"><?php echo esc_html( $n ); ?></a>
 				<?php else : ?>
 					<span class="uji-temario-mini__n uji-temario-mini__n--pendiente" aria-disabled="true"><?php echo esc_html( $n ); ?></span>
 				<?php endif; ?>

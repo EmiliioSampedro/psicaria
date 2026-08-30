@@ -695,19 +695,22 @@ body{margin:0;background:#F2F1EC}
 @media print{.uji-acciones,.uji-rail__tabs,.uji-esq,.uji-esq-grande{display:none!important}}
 
 /* ---------- índice general del temario ([uji_temas_indice]) ---------- */
-.uji-lector--indice{display:block;padding:26px 24px 60px}
-.uji-temario-mini{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.uji-lector--indice{display:block;padding:24px 24px 14px}
+.uji-temario-mini{display:flex;flex-wrap:wrap;gap:6px;list-style:none;margin:0;padding:0}
 .uji-temario-mini__n{
-  display:grid;place-items:center;width:44px;height:44px;border-radius:10px;
-  font-family:var(--uji-mono);font-size:16px;font-weight:600;
+  display:grid;place-items:center;width:32px;height:32px;border-radius:8px;
+  font-family:var(--uji-mono);font-size:13px;font-weight:600;
   font-variant-numeric:tabular-nums;text-decoration:none;
-  background:var(--uji-acento-suave);color:var(--uji-acento);
-  border:1px solid var(--uji-acento);
+  background:var(--uji-papel);color:var(--uji-acento);
+  border:1px solid var(--uji-borde);
 }
-a.uji-temario-mini__n:hover{background:var(--uji-acento);color:var(--uji-papel)}
+a.uji-temario-mini__n:hover{border-color:var(--uji-acento)}
 a.uji-temario-mini__n:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
+.uji-temario-mini__n--actual{
+  background:#C0273D;color:var(--uji-papel);border-color:#C0273D;
+}
 .uji-temario-mini__n--pendiente{
-  background:var(--uji-papel-2);color:var(--uji-tenue);border-color:var(--uji-borde);
+  background:var(--uji-papel);color:var(--uji-tenue);border-color:var(--uji-borde);
   cursor:default;
 }
 

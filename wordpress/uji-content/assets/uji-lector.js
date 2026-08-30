@@ -1,4 +1,21 @@
 (function(){
+  // evitar que el navegador reponga por su cuenta el scroll de la carga
+  // anterior al recargar: interferiría con el "retomar sección" de abajo.
+  try { if ('scrollRestoration' in history) history.scrollRestoration = 'manual'; } catch(e){}
+
+  // si esta carga no tiene tema (solo se ve la grilla de [uji_temas_indice],
+  // porque se entró a la página sin ?tema= en la URL), retomar el último
+  // tema visitado en vez de dejar el mensaje de "falta el atributo tema".
+  if (typeof window.UJI_TEMA === 'undefined') {
+    var recordado = null;
+    try { recordado = localStorage.getItem('uji-ultimo-tema'); } catch(e){}
+    if (recordado && !/[?&]tema=/.test(location.search)) {
+      var sep = location.search ? '&' : '?';
+      location.replace(location.pathname + location.search + sep + 'tema=' + encodeURIComponent(recordado));
+    }
+    return; // no hay lector en esta carga: nada más que hacer
+  }
+
   document.querySelector('.uji-lector').classList.add('uji-js');
   var barra = document.getElementById('uji-barra');
   var cuerpo = document.querySelector('.uji-cuerpo');
@@ -17,6 +34,7 @@
   var destinos = enlaces.map(function(a){ return document.querySelector(a.getAttribute('href')); });
   var esquemas = window.UJI_ESQUEMAS || {};
   var numTema = window.UJI_TEMA || '';
+  try { if (numTema) localStorage.setItem('uji-ultimo-tema', numTema); } catch(e){}
   var panelEsq = document.querySelector('.uji-esq__cuerpo');
   var cabEsq = document.querySelector('.uji-esq__ambito');
   var panelEsqGrande = document.querySelector('.uji-esq-grande__cuerpo');
@@ -53,13 +71,33 @@
       if(i < 0) return;
       enlaces.forEach(function(a){ a.classList.remove('activo'); });
       enlaces[i].classList.add('activo');
-      pintarEsquema(enlaces[i].getAttribute('data-ref'));
+      var ref = enlaces[i].getAttribute('data-ref');
+      pintarEsquema(ref);
+      try { if (numTema) localStorage.setItem('uji-ultima-seccion-' + numTema, ref); } catch(err){}
       var a = enlaces[i], r = a.getBoundingClientRect(), c = a.closest('.uji-indice');
       if(c && (r.top < 60 || r.bottom > window.innerHeight - 60)) a.scrollIntoView({block:'nearest'});
     });
   }, {rootMargin:'-72px 0px -70% 0px'});
   destinos.forEach(function(d){ if(d) obs.observe(d); });
-  pintarEsquema(enlaces.length ? enlaces[0].getAttribute('data-ref') : null);
+
+  // retomar la sección por la que se iba la última vez en este tema
+  var refGuardada = null;
+  try { refGuardada = numTema ? localStorage.getItem('uji-ultima-seccion-' + numTema) : null; } catch(e){}
+  var indiceGuardado = -1;
+  if (refGuardada) {
+    for (var gi = 0; gi < enlaces.length; gi++) {
+      if (enlaces[gi].getAttribute('data-ref') === refGuardada) { indiceGuardado = gi; break; }
+    }
+  }
+  if (indiceGuardado > -1 && destinos[indiceGuardado]) {
+    var destinoGuardado = destinos[indiceGuardado];
+    // esperar a que el navegador termine su propio ajuste de scroll de la
+    // carga antes de saltar, o nos lo pisaría un instante después
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){
+      destinoGuardado.scrollIntoView({block:'start'});
+    }); });
+  }
+  pintarEsquema(indiceGuardado > -1 ? refGuardada : (enlaces.length ? enlaces[0].getAttribute('data-ref') : null));
 
   // ---- pestañas Tema/Esquema de la zona de contenido: "la caja grande".
   // Se definen antes que la lógica de pestañas de abajo porque en móvil
