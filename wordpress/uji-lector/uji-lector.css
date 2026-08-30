@@ -476,6 +476,7 @@
 @media print{
   .uji-rail,.uji-progreso,.uji-pie,.uji-modal{display:none!important}
   .uji-lector{display:block;max-width:none;padding:0;background:#fff;--uji-canal:0px}
+  .uji-tema[hidden]{display:block!important}
   .uji-tema{border:0;border-radius:0;padding:0;background:#fff;box-shadow:none}
   .uji-sec,.uji-glosario{padding:0}
   .uji-tema p,.uji-lista{font-size:11pt;line-height:1.5;max-width:none}
@@ -599,6 +600,70 @@ body{margin:0;background:#F2F1EC}
 .uji-esq__cuerpo th{background:var(--uji-papel-2);font-family:var(--uji-display);font-size:11px}
 .uji-esq__cuerpo hr{border:0;border-top:1px solid var(--uji-borde);margin:12px 0}
 
+/* ---------- pestañas Tema/Esquema de la zona de contenido ---------- */
+.uji-cuerpo__tabs{
+  display:inline-flex;gap:4px;padding:4px;margin-bottom:16px;
+  background:var(--uji-papel-2);border:1px solid var(--uji-borde);border-radius:10px;
+}
+.uji-vista-tab{
+  font:inherit;font-size:13px;font-weight:600;cursor:pointer;
+  padding:8px 18px;border-radius:7px;border:1px solid transparent;
+  background:none;color:var(--uji-apagado);
+}
+.uji-vista-tab:hover{color:var(--uji-tinta)}
+.uji-vista-tab.activo{
+  background:var(--uji-papel);color:var(--uji-acento);
+  border-color:var(--uji-borde);box-shadow:var(--uji-sombra);
+}
+.uji-vista-tab:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
+[data-vista-panel][hidden]{display:none!important}
+@media print{.uji-cuerpo__tabs{display:none!important}}
+
+/* ---------- esquema a todo el ancho de la columna de contenido ---------- */
+.uji-esq-grande{
+  background:var(--uji-papel);border:1px solid var(--uji-borde);border-radius:14px;
+  box-shadow:var(--uji-sombra);overflow:hidden;
+}
+.uji-esq-grande__cab{
+  margin:0;padding:14px 24px;border-bottom:1px solid var(--uji-borde);
+  border-top:5px solid var(--uji-acento);background:var(--uji-acento-suave);
+  font-family:var(--uji-mono);font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--uji-acento);
+}
+.uji-esq-grande__cuerpo{padding:28px 32px 36px;font-size:16px;line-height:1.6}
+.uji-esq-grande__cuerpo > :first-child{margin-top:0}
+.uji-esq-grande__cuerpo h2,
+.uji-esq-grande__cuerpo h3,
+.uji-esq-grande__cuerpo h4{
+  font-family:var(--uji-display);font-weight:600;letter-spacing:-.01em;
+  color:var(--uji-tinta);margin:26px 0 10px;line-height:1.25;text-wrap:balance;
+}
+.uji-esq-grande__cuerpo h2{font-size:23px;color:var(--uji-acento)}
+.uji-esq-grande__cuerpo h3{font-size:18px}
+.uji-esq-grande__cuerpo h4{font-size:16px;color:var(--uji-apagado)}
+.uji-esq-grande__cuerpo p{margin:0 0 14px;font-family:var(--uji-display)}
+.uji-esq-grande__cuerpo ul,
+.uji-esq-grande__cuerpo ol{margin:0 0 16px;padding-left:26px}
+.uji-esq-grande__cuerpo li{margin:0 0 8px}
+.uji-esq-grande__cuerpo li::marker{color:var(--uji-acento)}
+.uji-esq-grande__cuerpo strong{font-weight:600}
+.uji-esq-grande__cuerpo code,
+.uji-esq-grande__cuerpo .uji-esq__ref{
+  font-family:var(--uji-mono);font-size:.85em;color:var(--uji-acento);
+  background:var(--uji-acento-suave);padding:2px 7px;border-radius:6px;
+}
+.uji-esq-grande__cuerpo table{width:100%;border-collapse:collapse;margin:0 0 16px}
+.uji-esq-grande__cuerpo th,
+.uji-esq-grande__cuerpo td{
+  border:1px solid var(--uji-borde);padding:10px 14px;text-align:left;vertical-align:top;
+}
+.uji-esq-grande__cuerpo th{background:var(--uji-papel-2);font-family:var(--uji-display);font-size:.9em}
+.uji-esq-grande__cuerpo hr{border:0;border-top:1px solid var(--uji-borde);margin:20px 0}
+.uji-esq-grande__cuerpo .uji-esq__vacio{
+  margin:0;color:var(--uji-tenue);line-height:1.6;
+  border:1px dashed var(--uji-borde-fuerte);border-radius:10px;padding:16px 20px;
+}
+
 /* ---------- botón de tests bajo la entrada activa ---------- */
 .uji-acciones{display:flex;gap:6px;margin:1px 0 8px 30px}
 .uji-indice ol ol .uji-acciones{margin-left:34px}
@@ -613,7 +678,7 @@ body{margin:0;background:#F2F1EC}
 }
 .uji-accion:hover{background:var(--sc,var(--uji-acento));color:var(--uji-papel);border-style:solid}
 .uji-accion:focus-visible{outline:2px solid var(--sc,var(--uji-acento));outline-offset:2px}
-@media print{.uji-acciones,.uji-rail__tabs,.uji-esq{display:none!important}}
+@media print{.uji-acciones,.uji-rail__tabs,.uji-esq,.uji-esq-grande{display:none!important}}
 
 /* ---------- índice general del temario ([uji_temas_indice]) ---------- */
 .uji-lector--indice{display:block;padding:26px 24px 60px}

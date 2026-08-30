@@ -19,6 +19,8 @@
   var numTema = window.UJI_TEMA || '';
   var panelEsq = document.querySelector('.uji-esq__cuerpo');
   var cabEsq = document.querySelector('.uji-esq__ambito');
+  var panelEsqGrande = document.querySelector('.uji-esq-grande__cuerpo');
+  var cabEsqGrande = document.querySelector('.uji-esq-grande__ambito');
   var refActual = null;
 
   function buscarEsquema(ref){
@@ -35,16 +37,13 @@
   }
 
   function pintarEsquema(ref){
-    if(!panelEsq || ref === refActual) return;
+    if((!panelEsq && !panelEsqGrande) || ref === refActual) return;
     refActual = ref;
     var e = buscarEsquema(ref);
-    if(e){
-      cabEsq.textContent = 'Esquema ' + e.ambito;
-      panelEsq.innerHTML = e.html;
-    } else {
-      cabEsq.textContent = 'Esquema';
-      panelEsq.innerHTML = '<p class="uji-esq__vacio">Todavía no hay esquema para este punto.</p>';
-    }
+    var titulo = e ? ('Esquema ' + e.ambito) : 'Esquema';
+    var html = e ? e.html : '<p class="uji-esq__vacio">Todavía no hay esquema para este punto.</p>';
+    if(panelEsq){ cabEsq.textContent = titulo; panelEsq.innerHTML = html; }
+    if(panelEsqGrande){ cabEsqGrande.textContent = titulo; panelEsqGrande.innerHTML = html; }
   }
 
   var obs = new IntersectionObserver(function(entradas){
@@ -117,6 +116,25 @@
   });
 
   aplicarVista();
+
+  // ---- pestañas Tema/Esquema de la zona de contenido (independientes de
+  // las del lateral: aquí "Esquema" muestra el esquema a todo el ancho de
+  // la columna de contenido, no en el hueco estrecho del lateral).
+  var vistaTabs = [].slice.call(document.querySelectorAll('.uji-vista-tab'));
+  var vistaPaneles = [].slice.call(document.querySelectorAll('[data-vista-panel]'));
+  vistaTabs.forEach(function(t){
+    t.addEventListener('click', function(){
+      var cual = t.getAttribute('data-vista');
+      vistaTabs.forEach(function(o){
+        var on = o === t;
+        o.classList.toggle('activo', on);
+        o.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      vistaPaneles.forEach(function(p){
+        p.hidden = p.getAttribute('data-vista-panel') !== cual;
+      });
+    });
+  });
 
   var pasos = [15.5, 16.5, 17.5, 19, 20.5], n = 1;
   try { var g = localStorage.getItem('uji-tam'); if(g !== null) n = Math.max(0, Math.min(4, +g)); } catch(e){}

@@ -164,7 +164,11 @@ function uji_content_shortcode_lector( $atts ) {
 		</aside>
 
 		<div class="uji-cuerpo">
-			<article class="uji-tema">
+			<div class="uji-cuerpo__tabs" role="tablist">
+				<button type="button" class="uji-vista-tab activo" data-vista="tema" role="tab" aria-selected="true">Tema</button>
+				<button type="button" class="uji-vista-tab" data-vista="esquema" role="tab" aria-selected="false">Esquema</button>
+			</div>
+			<article class="uji-tema" data-vista-panel="tema">
 				<header class="uji-tema__cab">
 					<span class="uji-tema__eyebrow">Tema <?php echo esc_html( $tema->numero ); ?></span>
 					<h1 class="uji-tema__titulo"><?php echo esc_html( $tema->titulo ); ?></h1>
@@ -188,6 +192,10 @@ function uji_content_shortcode_lector( $atts ) {
 					</section>
 				<?php endif; ?>
 			</article>
+			<div class="uji-esq-grande" data-vista-panel="esquema" hidden>
+				<p class="uji-esq-grande__cab"><span class="uji-esq-grande__ambito">Esquema</span></p>
+				<div class="uji-esq-grande__cuerpo"></div>
+			</div>
 		</div>
 	</div>
 
