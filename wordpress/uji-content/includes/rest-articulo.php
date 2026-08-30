@@ -12,8 +12,8 @@ defined( 'ABSPATH' ) || exit;
 function uji_content_tablas_por_norma() {
 	return [
 		'CE' => 'constitucion',
-		// 'RC'   => 'reglamento_congreso',
-		// 'RS'   => 'reglamento_senado',
+		'RC' => 'reglamento_congreso',
+		'RS' => 'reglamento_senado',
 		// 'EPCG' => 'estatuto_personal',
 	];
 }
