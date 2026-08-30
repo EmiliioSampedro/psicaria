@@ -175,6 +175,7 @@
 /* ---------- lienzo del tema ---------- */
 .uji-cuerpo{min-width:0}
 .uji-tema{
+  display:block;position:static;
   background:var(--uji-papel);border:1px solid var(--uji-borde);border-top:0;
   border-radius:0 0 14px 14px;padding:0 0 42px;overflow:hidden;box-shadow:var(--uji-sombra);
 }
@@ -223,7 +224,7 @@
 }
 
 /* ---------- secciones ---------- */
-.uji-sec{scroll-margin-top:70px;padding:0 40px}
+.uji-sec{display:block;scroll-margin-top:70px;padding:0 40px}
 @media (max-width:940px){.uji-sec{padding:0 14px}}
 .uji-sec__cab{
   display:grid;grid-template-columns:52px minmax(0,1fr);
@@ -251,7 +252,7 @@
 
 /* ---------- apartados (tarjetas) ---------- */
 .uji-ap{
-  display:grid;grid-template-columns:var(--uji-canal) minmax(0,1fr);
+  display:grid;position:static;grid-template-columns:var(--uji-canal) minmax(0,1fr);
   padding:22px 22px 12px;scroll-margin-top:70px;
   background:var(--uji-papel);
   border:1px solid var(--uji-borde);
@@ -284,6 +285,7 @@
 
 /* ---------- subapartados (cajas) ---------- */
 .uji-sub{
+  display:block;position:static;
   margin:16px 0;padding:14px 16px 6px;
   background:var(--uji-papel-2);border:1px solid var(--uji-borde);
   border-radius:10px;scroll-margin-top:70px;
@@ -370,7 +372,7 @@
 .uji-cita .uji-ref{background:var(--uji-papel)}
 
 /* ---------- glosario ---------- */
-.uji-glosario{scroll-margin-top:70px;padding:0 40px}
+.uji-glosario{display:block;scroll-margin-top:70px;padding:0 40px}
 @media (max-width:940px){.uji-glosario{padding:0 14px}}
 .uji-glosario__sub{
   font-family:var(--uji-display)!important;font-size:13px!important;
@@ -441,6 +443,7 @@
   font-family:var(--uji-mono);font-size:10.5px;color:var(--uji-tenue);min-height:12px;
 }
 .uji-art{
+  display:block;position:static;
   margin:0 0 14px;padding:14px 16px;
   border:1px solid var(--uji-borde);border-left:3px solid var(--uji-acento);
   border-radius:0 10px 10px 0;background:var(--uji-papel-2);
