@@ -283,7 +283,6 @@ function uji_content_render_indice( array $secciones, $tema_numero ) {
 		$html .= '<li' . $color_attr . '>';
 		$html .= '<a href="#' . esc_attr( $id ) . '" data-ref="' . esc_attr( $ref ) . '" data-titulo="' . esc_attr( $seccion->titulo ) . '">';
 		$html .= '<span class="uji-num">' . esc_html( $seccion->numero ) . '</span><span>' . esc_html( $seccion->titulo ) . '</span></a>';
-		$html .= '<div class="uji-acciones"><a class="uji-accion uji-accion--test" href="/tests/?ep_tema=' . esc_attr( $tema_numero ) . '&amp;ap=' . esc_attr( $seccion->numero ) . '">Tests</a></div>';
 
 		$epigrafes = [];
 		foreach ( $seccion->hijos as $hijo ) {
@@ -300,7 +299,6 @@ function uji_content_render_indice( array $secciones, $tema_numero ) {
 				$html .= '<li>';
 				$html .= '<a href="#' . esc_attr( $id_e ) . '" data-ref="' . esc_attr( $ref_e ) . '" data-titulo="' . esc_attr( $epigrafe->titulo ) . '">';
 				$html .= '<span class="uji-num">' . esc_html( $epigrafe->numero ) . '</span><span>' . esc_html( $epigrafe->titulo ) . '</span></a>';
-				$html .= '<div class="uji-acciones"><a class="uji-accion uji-accion--test" href="/tests/?ep_tema=' . esc_attr( $tema_numero ) . '&amp;ap=' . esc_attr( $epigrafe->numero ) . '">Tests</a></div>';
 				$html .= '</li>';
 			}
 			$html .= '</ol>';
