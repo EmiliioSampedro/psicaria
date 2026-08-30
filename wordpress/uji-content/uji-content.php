@@ -14,5 +14,6 @@ require_once __DIR__ . '/includes/schema.php';
 require_once __DIR__ . '/includes/rest-articulo.php';
 require_once __DIR__ . '/includes/shortcode-lector.php';
 require_once __DIR__ . '/seeds/tema-9.php';
+require_once __DIR__ . '/seeds/tema-9-esquemas.php';
 
 register_activation_hook( __FILE__, 'uji_content_crear_tablas' );

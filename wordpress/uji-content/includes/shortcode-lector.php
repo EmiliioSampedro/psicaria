@@ -79,7 +79,7 @@ function uji_content_shortcode_lector( $atts ) {
 			continue;
 		}
 		if ( isset( $por_id[ $e->nodo_id ] ) ) {
-			$ref               = uji_content_ref( $tema->numero, $por_id[ $e->nodo_id ] );
+			$ref               = uji_content_ref_nodo( $tema->numero, $por_id[ $e->nodo_id ], $por_id );
 			$esquemas[ $ref ]  = $e->contenido_html;
 		}
 	}
@@ -160,10 +160,53 @@ function uji_content_shortcode_lector( $atts ) {
 }
 
 /**
- * Referencia de navegación de un nodo, ej. "9.1" (sección/epígrafe) o "9.1_a" (con letra).
+ * Referencia de navegación de una sección, ej. "9.1".
  */
-function uji_content_ref( $tema_numero, $nodo ) {
-	$ref = $tema_numero . '.' . $nodo->numero;
+function uji_content_ref_seccion( $tema_numero, $seccion ) {
+	return $tema_numero . '.' . $seccion->numero;
+}
+
+/**
+ * Referencia de navegación de un epígrafe (o nivel inferior), ej. "9.1_2"
+ * (o "9.1_2_a" con letra). El guion bajo es intencional: es lo que permite
+ * a buscarEsquema() en uji-lector.js caer al esquema de la sección
+ * (ref.split('_')[0]) cuando el propio epígrafe no tiene esquema específico.
+ */
+function uji_content_ref_hijo( $ref_seccion, $numero_seccion, $nodo ) {
+	$resto  = $nodo->numero;
+	$prefijo = $numero_seccion . '.';
+	if ( strpos( $resto, $prefijo ) === 0 ) {
+		$resto = substr( $resto, strlen( $prefijo ) );
+	}
+	$ref = $ref_seccion . '_' . $resto;
+	if ( ! empty( $nodo->letra ) ) {
+		$ref .= '_' . $nodo->letra;
+	}
+	return $ref;
+}
+
+/**
+ * Ref de cualquier nodo del árbol, subiendo por sus padres hasta la sección.
+ * Se usa para volcar uji_esquemas (que puede apuntar a un nodo a cualquier
+ * profundidad) al mismo formato de ref que genera el índice lateral.
+ */
+function uji_content_ref_nodo( $tema_numero, $nodo, array $por_id ) {
+	if ( 'seccion' === $nodo->tipo ) {
+		return uji_content_ref_seccion( $tema_numero, $nodo );
+	}
+
+	$padre = ( ! empty( $nodo->parent_id ) && isset( $por_id[ $nodo->parent_id ] ) ) ? $por_id[ $nodo->parent_id ] : null;
+	if ( ! $padre ) {
+		return $tema_numero . '.' . $nodo->numero; // no debería ocurrir con un árbol bien formado
+	}
+
+	$ref_padre = uji_content_ref_nodo( $tema_numero, $padre, $por_id );
+
+	if ( 'seccion' === $padre->tipo ) {
+		return uji_content_ref_hijo( $ref_padre, $padre->numero, $nodo );
+	}
+
+	$ref = $ref_padre;
 	if ( ! empty( $nodo->letra ) ) {
 		$ref .= '_' . $nodo->letra;
 	}
@@ -185,7 +228,7 @@ function uji_content_anchor_id( $nodo ) {
 function uji_content_render_indice( array $secciones, $tema_numero ) {
 	$html = '<ol>';
 	foreach ( $secciones as $seccion ) {
-		$ref        = uji_content_ref( $tema_numero, $seccion );
+		$ref        = uji_content_ref_seccion( $tema_numero, $seccion );
 		$id         = uji_content_anchor_id( $seccion );
 		$color_attr = $seccion->color_clase ? ' class="uji-sec--' . esc_attr( $seccion->color_clase ) . '"' : '';
 
@@ -204,7 +247,7 @@ function uji_content_render_indice( array $secciones, $tema_numero ) {
 		if ( $epigrafes ) {
 			$html .= '<ol>';
 			foreach ( $epigrafes as $epigrafe ) {
-				$ref_e = uji_content_ref( $tema_numero, $epigrafe );
+				$ref_e = uji_content_ref_hijo( $ref, $seccion->numero, $epigrafe );
 				$id_e  = uji_content_anchor_id( $epigrafe );
 				$html .= '<li>';
 				$html .= '<a href="#' . esc_attr( $id_e ) . '" data-ref="' . esc_attr( $ref_e ) . '" data-titulo="' . esc_attr( $epigrafe->titulo ) . '">';
