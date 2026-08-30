@@ -108,6 +108,15 @@
   align-items:start;box-sizing:border-box;
 }
 .uji-lector *,.uji-lector *::before,.uji-lector *::after{box-sizing:border-box}
+/* blindaje contra selectores sueltos de elemento (article, section, aside, nav...)
+   que pueda traer el tema activo (float, width, margin, text-align...). Misma
+   especificidad que el reset de box-sizing de arriba: como está antes en el
+   archivo, cualquier regla .uji-xxx posterior que redeclare una de estas
+   propiedades (p. ej. .uji-sub{margin:16px 0}) gana por orden de aparición. */
+.uji-lector *{
+  float:none;clear:none;width:auto;max-width:none;margin:0;
+  text-align:left;text-decoration:none;
+}
 @media (max-width:940px){
   .uji-lector{grid-template-columns:minmax(0,1fr);gap:20px;padding:18px 14px 70px;--uji-canal:0px}
 }
