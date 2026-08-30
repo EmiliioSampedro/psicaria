@@ -22,7 +22,7 @@ add_action( 'wp_enqueue_scripts', 'uji_content_maybe_enqueue_lector_assets' );
 function uji_content_maybe_enqueue_lector_assets() {
 	if ( is_singular() ) {
 		$post = get_post();
-		if ( $post && has_shortcode( $post->post_content, 'uji_lector' ) ) {
+		if ( $post && ( has_shortcode( $post->post_content, 'uji_lector' ) || has_shortcode( $post->post_content, 'uji_temas_indice' ) ) ) {
 			uji_content_enqueue_lector_assets();
 		}
 	}
@@ -39,14 +39,21 @@ function uji_content_maybe_enqueue_lector_assets() {
 add_filter( 'the_content', 'uji_content_strip_wrapping_p', 20 );
 
 function uji_content_strip_wrapping_p( $content ) {
-	if ( false === strpos( $content, 'uji-progreso' ) ) {
-		return $content;
+	if ( false !== strpos( $content, 'uji-progreso' ) ) {
+		$content = preg_replace(
+			'#<p[^>]*>\s*(<div class="uji-progreso">.*?</script>)\s*</p>#s',
+			'$1',
+			$content
+		);
 	}
-	return preg_replace(
-		'#<p[^>]*>\s*(<div class="uji-progreso">.*?</script>)\s*</p>#s',
-		'$1',
-		$content
-	);
+	if ( false !== strpos( $content, 'uji-temario-mini' ) ) {
+		$content = preg_replace(
+			'#<p[^>]*>\s*(<div class="uji-lector uji-lector--indice">.*?</nav>\s*</div>)\s*</p>#s',
+			'$1',
+			$content
+		);
+	}
+	return $content;
 }
 
 function uji_content_shortcode_lector( $atts ) {
@@ -56,6 +63,12 @@ function uji_content_shortcode_lector( $atts ) {
 		'tema'    => '',
 		'temario' => '',
 	], $atts, 'uji_lector' );
+
+	// una sola página del lector para todos los temas: si no se fija el
+	// atributo, se elige por la URL (?tema=9), como hace [uji_temas_indice]
+	if ( '' === $atts['tema'] && isset( $_GET['tema'] ) ) {
+		$atts['tema'] = sanitize_text_field( wp_unslash( $_GET['tema'] ) );
+	}
 
 	if ( '' === $atts['tema'] ) {
 		return '<p><em>uji_lector: falta el atributo "tema".</em></p>';
@@ -203,6 +216,45 @@ function uji_content_shortcode_lector( $atts ) {
 		window.UJI_ESQUEMAS = <?php echo wp_json_encode( $esquemas ); ?>;
 		window.UJI_CFG      = { endpoint: <?php echo wp_json_encode( rest_url( 'uji/v1/articulo' ) ); ?> };
 	</script>
+	<?php
+	return ob_get_clean();
+}
+
+add_shortcode( 'uji_temas_indice', 'uji_content_shortcode_temas_indice' );
+
+/**
+ * [uji_temas_indice] — fila con el número de cada uno de los 17 temas del
+ * temario, arriba del todo de la página. Los que ya tengan contenido
+ * (fila en uji_temas, estado "publicado") enlazan a esta misma página con
+ * ?tema=N; el resto se muestran apagados, sin enlace, a la espera de tener
+ * contenido.
+ */
+function uji_content_shortcode_temas_indice( $atts ) {
+	global $wpdb;
+
+	$total_temas = 17;
+	$temas_tbl   = $wpdb->prefix . 'uji_temas';
+
+	$publicados = $wpdb->get_col(
+		"SELECT numero FROM {$temas_tbl} WHERE estado = 'publicado'"
+	);
+	$publicados = array_map( 'intval', $publicados );
+
+	$base_url = get_permalink();
+
+	ob_start();
+	?>
+	<div class="uji-lector uji-lector--indice">
+		<nav class="uji-temario-mini" aria-label="Índice de temas">
+			<?php for ( $n = 1; $n <= $total_temas; $n++ ) : ?>
+				<?php if ( in_array( $n, $publicados, true ) ) : ?>
+					<a class="uji-temario-mini__n" href="<?php echo esc_url( add_query_arg( 'tema', $n, $base_url ) ); ?>"><?php echo esc_html( $n ); ?></a>
+				<?php else : ?>
+					<span class="uji-temario-mini__n uji-temario-mini__n--pendiente" aria-disabled="true"><?php echo esc_html( $n ); ?></span>
+				<?php endif; ?>
+			<?php endfor; ?>
+		</nav>
+	</div>
 	<?php
 	return ob_get_clean();
 }

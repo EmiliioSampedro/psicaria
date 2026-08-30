@@ -26,7 +26,6 @@
   --uji-texto:"Source Serif 4",Georgia,"Times New Roman",serif;
   --uji-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
   --uji-cuerpo-tam:16.5px;
-  --uji-canal:66px;
   /* paleta de secciones (claro) */
   --c1:#1B1B8F; --c1s:#E9E9F9;
   --c2:#0E6656; --c2s:#E0F1EC;
@@ -122,7 +121,15 @@
   color:inherit;font-size:inherit;
 }
 @media (max-width:940px){
-  .uji-lector{grid-template-columns:minmax(0,1fr);gap:20px;padding:18px 14px 70px;--uji-canal:0px}
+  .uji-lector{grid-template-columns:minmax(0,1fr);gap:20px;padding:18px 14px 70px}
+}
+/* en escritorio, escapar del contenedor del tema (que suele tener su propio
+   ancho máximo, más estrecho) para aprovechar casi todo el ancho de pantallas
+   de portátil/monitor medianas, en vez de quedarnos limitados por debajo de
+   los 1600px de tope. La técnica usa vw en vez de % para no depender del
+   ancho real del contenedor padre. */
+@media (min-width:941px){
+  .uji-lector{width:98vw;margin-left:calc(-49vw + 50%);margin-right:calc(-49vw + 50%)}
 }
 
 /* ---------- índice lateral ---------- */
@@ -252,8 +259,8 @@
 
 /* ---------- apartados (tarjetas) ---------- */
 .uji-ap{
-  display:grid;position:static;grid-template-columns:var(--uji-canal) minmax(0,1fr);
-  padding:22px 22px 12px;scroll-margin-top:70px;
+  display:grid;position:static;grid-template-columns:1fr;
+  padding:18px 22px 10px;scroll-margin-top:70px;
   background:var(--uji-papel);
   border:1px solid var(--uji-borde);
   border-left:3px solid var(--sc);
@@ -262,9 +269,9 @@
 .uji-ap + .uji-ap{border-top:1px solid var(--uji-borde);margin-top:-1px}
 .uji-ap:last-child{border-radius:0 0 12px 12px}
 .uji-ap--suelto{padding-top:18px}
-.uji-ap__n{position:relative}
+.uji-ap__n{position:relative;margin-bottom:8px}
 .uji-ap__n span{
-  position:sticky;top:80px;display:inline-block;
+  position:static;display:inline-block;
   font-family:var(--uji-mono);font-size:12px;font-weight:600;
   color:var(--sc);background:var(--scs);
   border:1px solid var(--sc);
@@ -278,9 +285,7 @@
   padding-bottom:9px;border-bottom:1px dashed var(--uji-borde);
 }
 @media (max-width:940px){
-  .uji-ap{grid-template-columns:1fr;padding:18px 14px 10px}
-  .uji-ap__n{margin-bottom:8px}
-  .uji-ap__n span{position:static}
+  .uji-ap{padding:18px 14px 10px}
 }
 
 /* ---------- subapartados (cajas) ---------- */
@@ -484,7 +489,7 @@
 /* ---------- impresión ---------- */
 @media print{
   .uji-rail,.uji-progreso,.uji-pie,.uji-modal{display:none!important}
-  .uji-lector{display:block;max-width:none;padding:0;background:#fff;--uji-canal:0px}
+  .uji-lector{display:block;max-width:none;padding:0;background:#fff}
   .uji-tema[hidden]{display:block!important}
   .uji-tema{border:0;border-radius:0;padding:0;background:#fff;box-shadow:none}
   .uji-sec,.uji-glosario{padding:0}
@@ -699,28 +704,18 @@ body{margin:0;background:#F2F1EC}
 
 /* ---------- índice general del temario ([uji_temas_indice]) ---------- */
 .uji-lector--indice{display:block;padding:26px 24px 60px}
-.uji-temario{list-style:none;margin:0;padding:0;display:grid;gap:10px;
-  grid-template-columns:repeat(auto-fill,minmax(330px,1fr))}
-.uji-temario__item{margin:0}
-.uji-temario__item > a{
-  display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:center;
-  padding:14px 16px;text-decoration:none;
-  background:var(--uji-papel);border:1px solid var(--uji-borde);
-  border-left:4px solid var(--sc,var(--uji-acento));border-radius:12px;
-  box-shadow:var(--uji-sombra);
+.uji-temario-mini{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:0;padding:0}
+.uji-temario-mini__n{
+  display:grid;place-items:center;width:44px;height:44px;border-radius:10px;
+  font-family:var(--uji-mono);font-size:16px;font-weight:600;
+  font-variant-numeric:tabular-nums;text-decoration:none;
+  background:var(--uji-acento-suave);color:var(--uji-acento);
+  border:1px solid var(--uji-acento);
 }
-.uji-temario__item > a:hover{border-color:var(--sc,var(--uji-acento))}
-.uji-temario__n{
-  display:grid;place-items:center;width:52px;height:52px;border-radius:10px;
-  background:var(--scs,var(--uji-acento-suave));color:var(--sc,var(--uji-acento));
-  font-family:var(--uji-mono);font-size:21px;font-weight:600;
-  font-variant-numeric:tabular-nums;
-}
-.uji-temario__tit{
-  font-family:var(--uji-display);font-weight:600;font-size:15px;line-height:1.3;
-  color:var(--uji-tinta);text-wrap:balance;
-}
-.uji-temario__meta{
-  grid-column:2;font-family:var(--uji-mono);font-size:11px;color:var(--uji-tenue);
+a.uji-temario-mini__n:hover{background:var(--uji-acento);color:var(--uji-papel)}
+a.uji-temario-mini__n:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
+.uji-temario-mini__n--pendiente{
+  background:var(--uji-papel-2);color:var(--uji-tenue);border-color:var(--uji-borde);
+  cursor:default;
 }
 
