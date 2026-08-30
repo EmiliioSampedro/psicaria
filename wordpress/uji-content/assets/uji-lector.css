@@ -127,6 +127,7 @@
 
 /* ---------- índice lateral ---------- */
 .uji-rail{position:sticky;top:24px;display:flex;flex-direction:column;gap:12px}
+.uji-rail__cuerpo{display:flex;flex-direction:column;gap:12px}
 @media (max-width:940px){.uji-rail{position:static}}
 .uji-indice{
   background:var(--uji-papel);border:1px solid var(--uji-borde);border-radius:12px;
@@ -531,6 +532,15 @@ body{margin:0;background:#F2F1EC}
 }
 .uji-tab:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
 .uji-panel[hidden]{display:none!important}
+.uji-rail__cuerpo[hidden]{display:none!important}
+.uji-cuerpo[hidden]{display:none!important}
+/* la pestaña "Tema" solo tiene sentido en móvil: en escritorio el
+   contenido siempre está a la vista, así que no hace falta un botón para él */
+.uji-tab[data-panel="tema"]{display:none}
+@media (max-width:940px){
+  .uji-rail__tabs{grid-template-columns:repeat(3,1fr)}
+  .uji-tab[data-panel="tema"]{display:block}
+}
 
 /* el lateral se ensancha cuando se mira el esquema */
 .uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,400px) minmax(0,1fr)}

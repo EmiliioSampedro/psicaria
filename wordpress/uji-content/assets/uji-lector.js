@@ -12,6 +12,7 @@
 
   // ---- índice activo y esquema del punto por el que se va leyendo
   var lector = document.querySelector('.uji-lector');
+  var railCuerpo = document.querySelector('.uji-rail__cuerpo');
   var enlaces = [].slice.call(document.querySelectorAll('.uji-indice a:not(.uji-accion)'));
   var destinos = enlaces.map(function(a){ return document.querySelector(a.getAttribute('href')); });
   var esquemas = window.UJI_ESQUEMAS || {};
@@ -61,27 +62,61 @@
   destinos.forEach(function(d){ if(d) obs.observe(d); });
   pintarEsquema(enlaces.length ? enlaces[0].getAttribute('data-ref') : null);
 
-  // ---- pestañas del lateral
+  // ---- pestañas: Tema / Índice / Esquema
+  // En escritorio el lateral y el contenido se ven siempre los dos a la vez
+  // (las pestañas solo cambian qué se ve DENTRO del lateral). En móvil son
+  // tres vistas excluyentes: solo se ve una de las tres a la vez.
+  function esMovil(){ return window.matchMedia('(max-width:940px)').matches; }
+
   var tabs = [].slice.call(document.querySelectorAll('.uji-tab'));
+  var panelesLateral = [].slice.call(document.querySelectorAll('.uji-rail .uji-panel'));
+  var panelLateral = 'indice';
+  try {
+    var g = localStorage.getItem('uji-panel');
+    if (g === 'esquema' || g === 'indice') panelLateral = g;
+  } catch(e){}
+  var vista = 'tema';
+
+  function aplicarVista(){
+    tabs.forEach(function(t){
+      var p = t.getAttribute('data-panel');
+      var on = p === 'tema' ? vista === 'tema' : (vista !== 'tema' && p === panelLateral);
+      t.classList.toggle('activo', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panelesLateral.forEach(function(p){
+      p.hidden = p.getAttribute('data-panel') !== panelLateral;
+    });
+    var movil = esMovil();
+    if (cuerpo) cuerpo.hidden = movil && vista !== 'tema';
+    if (railCuerpo) railCuerpo.hidden = movil && vista === 'tema';
+    lector.classList.toggle('uji-modo-esquema', panelLateral === 'esquema');
+  }
+
   tabs.forEach(function(t){
     t.addEventListener('click', function(){
-      var cual = t.getAttribute('data-panel');
-      tabs.forEach(function(o){
-        var on = o === t;
-        o.classList.toggle('activo', on);
-        o.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      document.querySelectorAll('.uji-panel').forEach(function(p){
-        p.hidden = p.getAttribute('data-panel') !== cual;
-      });
-      lector.classList.toggle('uji-modo-esquema', cual === 'esquema');
-      try { localStorage.setItem('uji-panel', cual); } catch(e){}
+      var p = t.getAttribute('data-panel');
+      if (p === 'tema') {
+        vista = 'tema';
+      } else {
+        vista = 'otro';
+        panelLateral = p;
+        try { localStorage.setItem('uji-panel', p); } catch(e){}
+      }
+      aplicarVista();
     });
   });
-  try {
-    var guardado = localStorage.getItem('uji-panel');
-    if(guardado === 'esquema') tabs[1].click();
-  } catch(e){}
+
+  // al tocar un enlace del índice en móvil, pasar a la vista "Tema" para
+  // que el salto a la sección/epígrafe se vea (si no, el destino queda
+  // oculto detrás del panel de índice y el navegador no puede desplazarse).
+  enlaces.forEach(function(a){
+    a.addEventListener('click', function(){
+      if (esMovil()) { vista = 'tema'; aplicarVista(); }
+    });
+  });
+
+  aplicarVista();
 
   var pasos = [15.5, 16.5, 17.5, 19, 20.5], n = 1;
   try { var g = localStorage.getItem('uji-tam'); if(g !== null) n = Math.max(0, Math.min(4, +g)); } catch(e){}
