@@ -11,6 +11,23 @@ defined( 'ABSPATH' ) || exit;
 
 add_shortcode( 'uji_lector', 'uji_content_shortcode_lector' );
 
+/**
+ * Encolar el CSS/JS del lector en wp_enqueue_scripts (no dentro del propio
+ * shortcode: para entonces wp_head ya se ha impreso y los estilos no
+ * saldrían). Comprobamos si la entrada contiene el shortcode antes de
+ * cargar nada, para no meter estos assets en páginas que no los usan.
+ */
+add_action( 'wp_enqueue_scripts', 'uji_content_maybe_enqueue_lector_assets' );
+
+function uji_content_maybe_enqueue_lector_assets() {
+	if ( is_singular() ) {
+		$post = get_post();
+		if ( $post && has_shortcode( $post->post_content, 'uji_lector' ) ) {
+			uji_content_enqueue_lector_assets();
+		}
+	}
+}
+
 function uji_content_shortcode_lector( $atts ) {
 	global $wpdb;
 
