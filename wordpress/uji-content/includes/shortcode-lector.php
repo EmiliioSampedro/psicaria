@@ -161,6 +161,7 @@ function uji_content_shortcode_lector( $atts ) {
 	<div class="uji-progreso"><i id="uji-barra"></i></div>
 	<div class="uji-lector">
 		<aside class="uji-rail">
+			<?php echo uji_content_render_secnav( $raiz, $tema->numero ); ?>
 			<div class="uji-rail__tabs" role="tablist">
 				<button type="button" class="uji-tab activo" data-panel="tema" role="tab" aria-selected="true">Tema</button>
 				<button type="button" class="uji-tab" data-panel="esquema" role="tab" aria-selected="false">Esquema</button>
@@ -332,6 +333,21 @@ function uji_content_anchor_id( $nodo ) {
 		$base .= '-' . strtolower( $nodo->letra );
 	}
 	return $base;
+}
+
+/**
+ * Fila de botones numéricos (uno por sección del tema), arriba del todo del
+ * lateral: acceso directo a cualquier sección sin tener que abrir el Índice.
+ */
+function uji_content_render_secnav( array $secciones, $tema_numero ) {
+	$html = '<nav class="uji-secnav" aria-label="Secciones del tema">';
+	foreach ( $secciones as $seccion ) {
+		$ref = uji_content_ref_seccion( $tema_numero, $seccion );
+		$id  = uji_content_anchor_id( $seccion );
+		$html .= '<a class="uji-secnav__n" href="#' . esc_attr( $id ) . '" data-ref="' . esc_attr( $ref ) . '" title="' . esc_attr( $seccion->titulo ) . '">' . esc_html( $seccion->numero ) . '</a>';
+	}
+	$html .= '</nav>';
+	return $html;
 }
 
 /**

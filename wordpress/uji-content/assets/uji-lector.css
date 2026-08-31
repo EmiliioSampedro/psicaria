@@ -529,6 +529,22 @@ body{margin:0;background:#F2F1EC}
 .uji-accion--test:hover{background:var(--sc,var(--uji-acento));color:var(--uji-papel);border-style:solid}
 @media print{.uji-acciones{display:none!important}}
 
+/* ---------- lateral: fila de números de sección ---------- */
+.uji-secnav{display:flex;flex-wrap:wrap;gap:6px}
+.uji-secnav__n{
+  display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;border-radius:8px;
+  background:var(--uji-papel);border:1px solid var(--uji-borde);
+  font-family:var(--uji-mono);font-size:12px;font-weight:600;
+  color:var(--uji-apagado);
+}
+.uji-secnav__n:hover{color:var(--uji-tinta);border-color:var(--uji-tinta)}
+.uji-secnav__n.activo{
+  background:var(--uji-acento);border-color:var(--uji-acento);color:var(--uji-papel);
+}
+.uji-secnav__n:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
+@media (max-width:940px){.uji-secnav{display:none}}
+
 /* ---------- lateral: pestañas Índice / Esquema ---------- */
 .uji-rail__tabs{
   display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;
@@ -561,10 +577,10 @@ body{margin:0;background:#F2F1EC}
   .uji-tab[data-panel="indice"]{order:0}
 }
 
-/* el lateral se ensancha cuando se mira el esquema */
-.uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,400px) minmax(0,1fr)}
+/* el lateral dobla su ancho (300px -> 600px) cuando se mira el esquema */
+.uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,600px) minmax(0,1fr)}
 @media (max-width:1100px){
-  .uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,340px) minmax(0,1fr)}
+  .uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,460px) minmax(0,1fr)}
 }
 @media (max-width:940px){
   .uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,1fr)}

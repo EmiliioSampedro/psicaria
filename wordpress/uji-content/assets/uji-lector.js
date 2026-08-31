@@ -39,6 +39,14 @@
   var esquemas = window.UJI_ESQUEMAS || {};
   var numTema = window.UJI_TEMA || '';
   try { if (numTema) localStorage.setItem('uji-ultimo-tema', numTema); } catch(e){}
+  var botonesSec = [].slice.call(document.querySelectorAll('.uji-secnav__n'));
+  function marcarSecnav(ref){
+    if(!botonesSec.length || !ref) return;
+    var refSec = ref.split('_')[0];
+    botonesSec.forEach(function(b){
+      b.classList.toggle('activo', b.getAttribute('data-ref') === refSec);
+    });
+  }
   var panelEsq = document.querySelector('.uji-esq__cuerpo');
   var cabEsq = document.querySelector('.uji-esq__ambito');
   var panelEsqGrande = document.querySelector('.uji-esq-grande__cuerpo');
@@ -77,6 +85,7 @@
       enlaces[i].classList.add('activo');
       var ref = enlaces[i].getAttribute('data-ref');
       pintarEsquema(ref);
+      marcarSecnav(ref);
       try { if (numTema) localStorage.setItem('uji-ultima-seccion-' + numTema, ref); } catch(err){}
       var a = enlaces[i], r = a.getBoundingClientRect(), c = a.closest('.uji-indice');
       if(c && (r.top < 60 || r.bottom > window.innerHeight - 60)) a.scrollIntoView({block:'nearest'});
@@ -101,7 +110,9 @@
       destinoGuardado.scrollIntoView({block:'start'});
     }); });
   }
-  pintarEsquema(indiceGuardado > -1 ? refGuardada : (enlaces.length ? enlaces[0].getAttribute('data-ref') : null));
+  var refInicial = indiceGuardado > -1 ? refGuardada : (enlaces.length ? enlaces[0].getAttribute('data-ref') : null);
+  pintarEsquema(refInicial);
+  marcarSecnav(refInicial);
 
   // ---- pestañas Tema/Esquema de la zona de contenido: "la caja grande".
   // Se definen antes que la lógica de pestañas de abajo porque en móvil
