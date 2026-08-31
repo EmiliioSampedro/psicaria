@@ -226,6 +226,11 @@
   font-size:clamp(18px,2.2vw,24px);line-height:1.2;letter-spacing:-.015em;
   text-wrap:balance;color:var(--uji-tinta);
 }
+@media (max-width:940px){
+  .uji-cuerpo__cab{gap:6px 10px}
+  .uji-tema__eyebrow{font-size:13px;padding:4px 9px;border-radius:6px}
+  .uji-tema__titulo{font-size:15px}
+}
 .uji-tema__meta{
   display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 0;
   font-family:var(--uji-mono);font-size:11px;
@@ -303,6 +308,11 @@
 }
 @media (max-width:940px){
   .uji-ap{padding:18px 14px 10px}
+  /* en móvil, número y título del epígrafe en la misma fila (antes en
+     flex el título se iba entero a la línea de abajo si no cabía al
+     lado del número; con grid el texto envuelve dentro de su columna) */
+  .uji-ap__cab{display:grid;grid-template-columns:auto minmax(0,1fr);flex-wrap:nowrap;gap:10px}
+  .uji-ap__titulo{font-size:15.5px}
 }
 
 /* ---------- subapartados (cajas) ---------- */
