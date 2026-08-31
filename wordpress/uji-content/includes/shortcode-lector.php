@@ -169,7 +169,6 @@ function uji_content_shortcode_lector( $atts ) {
 			<div class="uji-rail__cuerpo" hidden>
 				<div class="uji-panel" data-panel="indice">
 					<nav class="uji-indice" aria-label="Índice del tema">
-						<p class="uji-indice__tit">En este tema</p>
 						<?php echo uji_content_render_indice( $raiz, $tema->numero ); ?>
 					</nav>
 				</div>
@@ -191,6 +190,7 @@ function uji_content_shortcode_lector( $atts ) {
 
 		<div class="uji-cuerpo">
 			<header class="uji-cuerpo__cab">
+				<?php echo uji_content_render_temario_mini_nav( $tema->numero ); ?>
 				<span class="uji-tema__eyebrow">Tema <?php echo esc_html( $tema->numero ); ?></span>
 				<h1 class="uji-tema__titulo"><?php echo esc_html( $tema->titulo ); ?></h1>
 				<div class="uji-cuerpo__tabs" role="tablist">
@@ -243,6 +243,25 @@ add_shortcode( 'uji_temas_indice', 'uji_content_shortcode_temas_indice' );
  * contenido.
  */
 function uji_content_shortcode_temas_indice( $atts ) {
+	$actual = isset( $_GET['tema'] ) ? (int) $_GET['tema'] : 0;
+
+	ob_start();
+	?>
+	<div class="uji-lector uji-lector--indice">
+		<?php echo uji_content_render_temario_mini_nav( $actual ); ?>
+	</div>
+	<?php
+	return ob_get_clean();
+}
+
+/**
+ * Fila con el número de cada uno de los 17 temas del temario -- la usan
+ * tanto [uji_temas_indice] (suelta) como la cabecera de [uji_lector]
+ * (integrada arriba del todo de la caja de contenido). Los que ya tengan
+ * contenido (fila en uji_temas, estado "publicado") enlazan a esta misma
+ * página con ?tema=N; el resto se muestran apagados, sin enlace.
+ */
+function uji_content_render_temario_mini_nav( $actual_numero ) {
 	global $wpdb;
 
 	$total_temas = 17;
@@ -252,24 +271,20 @@ function uji_content_shortcode_temas_indice( $atts ) {
 		"SELECT numero FROM {$temas_tbl} WHERE estado = 'publicado'"
 	);
 	$publicados = array_map( 'intval', $publicados );
-
-	$actual   = isset( $_GET['tema'] ) ? (int) $_GET['tema'] : 0;
-	$base_url = get_permalink();
+	$base_url   = get_permalink();
 
 	ob_start();
 	?>
-	<div class="uji-lector uji-lector--indice">
-		<nav class="uji-temario-mini" aria-label="Índice de temas">
-			<?php for ( $n = 1; $n <= $total_temas; $n++ ) : ?>
-				<?php if ( in_array( $n, $publicados, true ) ) : ?>
-					<?php $clase = 'uji-temario-mini__n' . ( $n === $actual ? ' uji-temario-mini__n--actual' : '' ); ?>
-					<a class="<?php echo esc_attr( $clase ); ?>" href="<?php echo esc_url( add_query_arg( 'tema', $n, $base_url ) ); ?>"><?php echo esc_html( $n ); ?></a>
-				<?php else : ?>
-					<span class="uji-temario-mini__n uji-temario-mini__n--pendiente" aria-disabled="true"><?php echo esc_html( $n ); ?></span>
-				<?php endif; ?>
-			<?php endfor; ?>
-		</nav>
-	</div>
+	<nav class="uji-temario-mini" aria-label="Índice de temas">
+		<?php for ( $n = 1; $n <= $total_temas; $n++ ) : ?>
+			<?php if ( in_array( $n, $publicados, true ) ) : ?>
+				<?php $clase = 'uji-temario-mini__n' . ( $n === (int) $actual_numero ? ' uji-temario-mini__n--actual' : '' ); ?>
+				<a class="<?php echo esc_attr( $clase ); ?>" href="<?php echo esc_url( add_query_arg( 'tema', $n, $base_url ) ); ?>"><?php echo esc_html( $n ); ?></a>
+			<?php else : ?>
+				<span class="uji-temario-mini__n uji-temario-mini__n--pendiente" aria-disabled="true"><?php echo esc_html( $n ); ?></span>
+			<?php endif; ?>
+		<?php endfor; ?>
+	</nav>
 	<?php
 	return ob_get_clean();
 }

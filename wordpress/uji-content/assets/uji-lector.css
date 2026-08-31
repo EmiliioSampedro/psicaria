@@ -133,10 +133,6 @@
   padding:14px 10px;max-height:calc(100vh - 140px);overflow:auto;box-shadow:var(--uji-sombra);
 }
 @media (max-width:940px){.uji-indice{max-height:320px}}
-.uji-indice__tit{
-  margin:0 0 10px 8px;font-size:10px;font-family:var(--uji-mono);
-  letter-spacing:.13em;text-transform:uppercase;color:var(--uji-tenue);
-}
 .uji-indice ol{list-style:none;margin:0;padding:0}
 .uji-indice > ol > li{
   margin:0 0 4px;padding-left:9px;
@@ -193,11 +189,15 @@
   border-radius:14px 14px 0 0;
 }
 @media (max-width:940px){.uji-cuerpo__cab{padding:16px 18px}}
+.uji-cuerpo__cab .uji-temario-mini{
+  flex:0 0 100%;margin:0 0 4px;padding-bottom:14px;
+  border-bottom:1px solid var(--uji-borde);
+}
 .uji-tema__eyebrow{
   display:inline-block;flex:none;
-  font-family:var(--uji-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  font-family:var(--uji-mono);font-size:22px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
   color:var(--uji-papel);background:var(--uji-acento);
-  padding:4px 10px;border-radius:6px;
+  padding:6px 14px;border-radius:8px;
 }
 .uji-tema__titulo{
   margin:0;flex:1 1 auto;min-width:0;
