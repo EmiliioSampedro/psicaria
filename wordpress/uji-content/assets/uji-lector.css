@@ -169,6 +169,17 @@
 
 /* ---------- lienzo del tema ---------- */
 .uji-cuerpo{min-width:0}
+.uji-arriba{
+  position:sticky;bottom:20px;float:right;clear:both;margin:0 14px 0 0;
+  display:flex;align-items:center;justify-content:center;
+  width:42px;height:42px;border-radius:50%;z-index:5;
+  background:var(--uji-acento);color:var(--uji-papel);border:0;
+  box-shadow:var(--uji-sombra);cursor:pointer;font-size:18px;line-height:1;
+}
+.uji-arriba[hidden]{display:none}
+.uji-arriba:hover{filter:brightness(1.12)}
+.uji-arriba:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
+@media print{.uji-arriba{display:none!important}}
 .uji-tema{
   display:block;position:static;
   background:var(--uji-papel);border:1px solid var(--uji-borde);border-top:0;

@@ -32,6 +32,19 @@
   document.addEventListener('scroll', progreso, {passive:true});
   progreso();
 
+  // ---- botón "ir arriba", visible solo tras bajar un poco
+  var botonArriba = document.getElementById('uji-arriba');
+  if (botonArriba) {
+    function refrescarBotonArriba(){
+      botonArriba.hidden = window.scrollY < 500;
+    }
+    document.addEventListener('scroll', refrescarBotonArriba, {passive:true});
+    refrescarBotonArriba();
+    botonArriba.addEventListener('click', function(){
+      window.scrollTo({top: 0, behavior: 'smooth'});
+    });
+  }
+
   // ---- índice activo y esquema del punto por el que se va leyendo
   var railCuerpo = document.querySelector('.uji-rail__cuerpo');
   var enlaces = [].slice.call(document.querySelectorAll('.uji-indice a:not(.uji-accion)'));

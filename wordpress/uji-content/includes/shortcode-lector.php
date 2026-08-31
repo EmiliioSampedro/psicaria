@@ -221,6 +221,7 @@ function uji_content_shortcode_lector( $atts ) {
 				<p class="uji-esq-grande__cab"><span class="uji-esq-grande__ambito">Esquema</span></p>
 				<div class="uji-esq-grande__cuerpo"></div>
 			</div>
+			<button type="button" class="uji-arriba" id="uji-arriba" title="Ir arriba del todo" hidden>↑</button>
 		</div>
 	</div>
 
@@ -243,6 +244,14 @@ add_shortcode( 'uji_temas_indice', 'uji_content_shortcode_temas_indice' );
  * contenido.
  */
 function uji_content_shortcode_temas_indice( $atts ) {
+	// [uji_lector] ya trae esta misma fila integrada en su propia cabecera;
+	// si conviven en la misma página (caso normal) esta versión suelta se
+	// queda callada para no duplicarla.
+	$post = get_post();
+	if ( $post && has_shortcode( $post->post_content, 'uji_lector' ) ) {
+		return '';
+	}
+
 	$actual = isset( $_GET['tema'] ) ? (int) $_GET['tema'] : 0;
 
 	ob_start();
