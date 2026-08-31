@@ -125,12 +125,19 @@
 }
 
 /* ---------- índice lateral ---------- */
-.uji-rail{position:sticky;top:24px;z-index:20;display:flex;flex-direction:column;gap:12px}
-.uji-rail__cuerpo{display:flex;flex-direction:column;gap:12px}
-@media (max-width:940px){.uji-rail{position:static}}
-.uji-indice{
+/* top y bottom a la vez: dejan de estar "pegados" (sticky) un poco antes de
+   que el contenedor (.uji-lector) llegue a su borde inferior, para no
+   acabar montados sobre lo que venga después (el pie de la página) */
+.uji-rail{position:sticky;top:24px;bottom:24px;z-index:20;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 48px)}
+.uji-rail__caja{
+  display:flex;flex-direction:column;min-height:0;
   background:var(--uji-papel);border:1px solid var(--uji-borde);border-radius:12px;
-  padding:14px 10px;max-height:calc(100vh - 220px);overflow:auto;box-shadow:var(--uji-sombra);
+  box-shadow:var(--uji-sombra);overflow:hidden;
+}
+.uji-rail__cuerpo{display:flex;flex-direction:column;min-height:0;flex:1 1 auto}
+@media (max-width:940px){.uji-rail{position:static;max-height:none}}
+.uji-indice{
+  padding:14px 10px;max-height:calc(100vh - 260px);overflow:auto;
 }
 @media (max-width:940px){.uji-indice{max-height:320px}}
 .uji-indice ol{list-style:none;margin:0;padding:0}
@@ -555,10 +562,10 @@ body{margin:0;background:#F2F1EC}
 }
 .uji-secnav__n:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
 
-/* ---------- lateral: pestañas Índice / Esquema ---------- */
+/* ---------- lateral: pestañas Índice / Esquema, integradas arriba de la caja ---------- */
 .uji-rail__tabs{
-  display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;
-  background:var(--uji-papel-2);border:1px solid var(--uji-borde);border-radius:10px;
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;flex:none;
+  background:var(--uji-papel-2);border-bottom:1px solid var(--uji-borde);
 }
 .uji-tab{
   font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
@@ -571,6 +578,7 @@ body{margin:0;background:#F2F1EC}
   border-color:var(--uji-borde);box-shadow:var(--uji-sombra);
 }
 .uji-tab:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
+.uji-panel{display:flex;flex-direction:column;min-height:0}
 .uji-panel[hidden]{display:none!important}
 .uji-rail__cuerpo[hidden]{display:none!important}
 .uji-cuerpo[hidden]{display:none!important}
@@ -598,9 +606,8 @@ body{margin:0;background:#F2F1EC}
 
 /* ---------- el esquema, pensado para columna estrecha ---------- */
 .uji-esq{
-  background:var(--uji-papel);border:1px solid var(--uji-borde);border-radius:12px;
-  box-shadow:var(--uji-sombra);overflow:hidden;
-  max-height:calc(100vh - 190px);display:flex;flex-direction:column;
+  overflow:hidden;min-height:0;
+  max-height:calc(100vh - 260px);display:flex;flex-direction:column;
 }
 @media (max-width:940px){.uji-esq{max-height:none}}
 .uji-esq__cab{

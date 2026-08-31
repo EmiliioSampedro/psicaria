@@ -161,29 +161,31 @@ function uji_content_shortcode_lector( $atts ) {
 	<div class="uji-progreso"><i id="uji-barra"></i></div>
 	<div class="uji-lector">
 		<aside class="uji-rail">
-			<div class="uji-rail__tabs" role="tablist">
-				<button type="button" class="uji-tab activo" data-panel="tema" role="tab" aria-selected="true">Tema</button>
-				<button type="button" class="uji-tab" data-panel="esquema" role="tab" aria-selected="false">Esquema</button>
-				<button type="button" class="uji-tab" data-panel="indice" role="tab" aria-selected="false">Índice</button>
+			<div class="uji-herr">
+				<button class="uji-btn" id="uji-menos" title="Reducir el texto">A−</button>
+				<button class="uji-btn" id="uji-mas" title="Aumentar el texto">A+</button>
+				<button class="uji-btn" id="uji-tema" title="Cambiar a modo oscuro">🌙 Oscuro</button>
+				<button class="uji-btn" id="uji-imprimir">Imprimir</button>
 			</div>
-			<div class="uji-rail__cuerpo" hidden>
-				<div class="uji-panel" data-panel="indice">
-					<nav class="uji-indice" aria-label="Índice del tema">
-						<?php echo uji_content_render_indice( $raiz, $tema->numero ); ?>
-					</nav>
+			<div class="uji-rail__caja">
+				<div class="uji-rail__tabs" role="tablist">
+					<button type="button" class="uji-tab activo" data-panel="tema" role="tab" aria-selected="true">Tema</button>
+					<button type="button" class="uji-tab" data-panel="esquema" role="tab" aria-selected="false">Esquema</button>
+					<button type="button" class="uji-tab" data-panel="indice" role="tab" aria-selected="false">Índice</button>
 				</div>
-				<div class="uji-panel" data-panel="esquema" hidden>
-					<?php echo uji_content_render_secnav( $raiz, $tema->numero ); ?>
-					<div class="uji-esq">
-						<p class="uji-esq__cab"><span class="uji-esq__ambito">Esquema</span></p>
-						<div class="uji-esq__cuerpo"></div>
+				<div class="uji-rail__cuerpo" hidden>
+					<div class="uji-panel" data-panel="indice">
+						<nav class="uji-indice" aria-label="Índice del tema">
+							<?php echo uji_content_render_indice( $raiz, $tema->numero ); ?>
+						</nav>
 					</div>
-				</div>
-				<div class="uji-herr">
-					<button class="uji-btn" id="uji-menos" title="Reducir el texto">A−</button>
-					<button class="uji-btn" id="uji-mas" title="Aumentar el texto">A+</button>
-					<button class="uji-btn" id="uji-tema" title="Cambiar a modo oscuro">🌙 Oscuro</button>
-					<button class="uji-btn" id="uji-imprimir">Imprimir</button>
+					<div class="uji-panel" data-panel="esquema" hidden>
+						<?php echo uji_content_render_secnav( $raiz, $tema->numero ); ?>
+						<div class="uji-esq">
+							<p class="uji-esq__cab"><span class="uji-esq__ambito">Esquema</span></p>
+							<div class="uji-esq__cuerpo"></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		</aside>
