@@ -125,12 +125,12 @@
 }
 
 /* ---------- índice lateral ---------- */
-.uji-rail{position:sticky;top:24px;display:flex;flex-direction:column;gap:12px}
+.uji-rail{position:sticky;top:24px;z-index:20;display:flex;flex-direction:column;gap:12px}
 .uji-rail__cuerpo{display:flex;flex-direction:column;gap:12px}
 @media (max-width:940px){.uji-rail{position:static}}
 .uji-indice{
   background:var(--uji-papel);border:1px solid var(--uji-borde);border-radius:12px;
-  padding:14px 10px;max-height:calc(100vh - 140px);overflow:auto;box-shadow:var(--uji-sombra);
+  padding:14px 10px;max-height:calc(100vh - 220px);overflow:auto;box-shadow:var(--uji-sombra);
 }
 @media (max-width:940px){.uji-indice{max-height:320px}}
 .uji-indice ol{list-style:none;margin:0;padding:0}
@@ -170,9 +170,9 @@
 /* ---------- lienzo del tema ---------- */
 .uji-cuerpo{min-width:0}
 .uji-arriba{
-  position:sticky;bottom:20px;float:right;clear:both;margin:0 14px 0 0;
+  position:sticky;bottom:90px;float:right;clear:both;margin:0 14px 0 0;
   display:flex;align-items:center;justify-content:center;
-  width:42px;height:42px;border-radius:50%;z-index:5;
+  width:42px;height:42px;border-radius:50%;z-index:20;
   background:var(--uji-acento);color:var(--uji-papel);border:0;
   box-shadow:var(--uji-sombra);cursor:pointer;font-size:18px;line-height:1;
 }
