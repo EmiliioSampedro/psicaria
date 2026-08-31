@@ -211,6 +211,9 @@
   flex:0 0 100%;margin:0 0 4px;padding-bottom:14px;
   border-bottom:1px solid var(--uji-borde);
 }
+/* en móvil ya está el índice de secciones a un toque (pestaña Índice);
+   la fila de 17 números aquí arriba solo quita sitio */
+@media (max-width:940px){.uji-cuerpo__cab .uji-temario-mini{display:none}}
 .uji-tema__eyebrow{
   display:inline-block;flex:none;
   font-family:var(--uji-mono);font-size:22px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
