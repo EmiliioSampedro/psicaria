@@ -32,21 +32,12 @@
   progreso();
 
   // ---- índice activo y esquema del punto por el que se va leyendo
-  var lector = document.querySelector('.uji-lector');
   var railCuerpo = document.querySelector('.uji-rail__cuerpo');
   var enlaces = [].slice.call(document.querySelectorAll('.uji-indice a:not(.uji-accion)'));
   var destinos = enlaces.map(function(a){ return document.querySelector(a.getAttribute('href')); });
   var esquemas = window.UJI_ESQUEMAS || {};
   var numTema = window.UJI_TEMA || '';
   try { if (numTema) localStorage.setItem('uji-ultimo-tema', numTema); } catch(e){}
-  var botonesSec = [].slice.call(document.querySelectorAll('.uji-secnav__n'));
-  function marcarSecnav(ref){
-    if(!botonesSec.length || !ref) return;
-    var refSec = ref.split('_')[0];
-    botonesSec.forEach(function(b){
-      b.classList.toggle('activo', b.getAttribute('data-ref') === refSec);
-    });
-  }
   var panelEsq = document.querySelector('.uji-esq__cuerpo');
   var cabEsq = document.querySelector('.uji-esq__ambito');
   var panelEsqGrande = document.querySelector('.uji-esq-grande__cuerpo');
@@ -85,7 +76,6 @@
       enlaces[i].classList.add('activo');
       var ref = enlaces[i].getAttribute('data-ref');
       pintarEsquema(ref);
-      marcarSecnav(ref);
       try { if (numTema) localStorage.setItem('uji-ultima-seccion-' + numTema, ref); } catch(err){}
       var a = enlaces[i], r = a.getBoundingClientRect(), c = a.closest('.uji-indice');
       if(c && (r.top < 60 || r.bottom > window.innerHeight - 60)) a.scrollIntoView({block:'nearest'});
@@ -112,7 +102,6 @@
   }
   var refInicial = indiceGuardado > -1 ? refGuardada : (enlaces.length ? enlaces[0].getAttribute('data-ref') : null);
   pintarEsquema(refInicial);
-  marcarSecnav(refInicial);
 
   // ---- pestañas Tema/Esquema de la zona de contenido: "la caja grande".
   // Se definen antes que la lógica de pestañas de abajo porque en móvil
@@ -144,11 +133,7 @@
 
   var tabs = [].slice.call(document.querySelectorAll('.uji-tab'));
   var panelesLateral = [].slice.call(document.querySelectorAll('.uji-rail .uji-panel'));
-  var panelLateral = 'indice'; // escritorio: qué panel del lateral se ve
-  try {
-    var g = localStorage.getItem('uji-panel');
-    if (g === 'esquema' || g === 'indice') panelLateral = g;
-  } catch(e){}
+  var panelLateral = 'indice'; // escritorio: el lateral siempre empieza en el índice
   var vistaMovil = 'tema'; // móvil: qué pestaña de las tres está activa
 
   function aplicarVista(){
@@ -171,7 +156,6 @@
       if (cuerpo) cuerpo.hidden = false;
       if (railCuerpo) railCuerpo.hidden = false;
     }
-    lector.classList.toggle('uji-modo-esquema', !movil && panelLateral === 'esquema');
   }
 
   tabs.forEach(function(t){
@@ -181,9 +165,22 @@
         vistaMovil = p;
       } else if (p !== 'tema') {
         panelLateral = p;
-        try { localStorage.setItem('uji-panel', p); } catch(e){}
       }
       aplicarVista();
+    });
+  });
+
+  // ---- fila de números de sección: eligen a mano el esquema de esa
+  // sección (y abren la pestaña Esquema del lateral). No tocan el índice
+  // ni desplazan el contenido — son solo un atajo dentro del esquema.
+  var botonesSec = [].slice.call(document.querySelectorAll('.uji-secnav__n'));
+  botonesSec.forEach(function(b){
+    b.addEventListener('click', function(){
+      botonesSec.forEach(function(o){ o.classList.remove('activo'); });
+      b.classList.add('activo');
+      refActual = null; // forzar repintado aunque coincida con la última sección leída
+      pintarEsquema(b.getAttribute('data-ref'));
+      if (!esMovil()) { panelLateral = 'esquema'; aplicarVista(); }
     });
   });
 

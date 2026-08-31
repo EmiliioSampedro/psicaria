@@ -533,7 +533,7 @@ body{margin:0;background:#F2F1EC}
 .uji-secnav{display:flex;flex-wrap:wrap;gap:6px}
 .uji-secnav__n{
   display:flex;align-items:center;justify-content:center;
-  width:28px;height:28px;border-radius:8px;
+  width:28px;height:28px;border-radius:8px;cursor:pointer;
   background:var(--uji-papel);border:1px solid var(--uji-borde);
   font-family:var(--uji-mono);font-size:12px;font-weight:600;
   color:var(--uji-apagado);
@@ -575,15 +575,6 @@ body{margin:0;background:#F2F1EC}
   .uji-rail__tabs{grid-template-columns:repeat(3,1fr)}
   .uji-tab[data-panel="tema"]{display:block}
   .uji-tab[data-panel="indice"]{order:0}
-}
-
-/* el lateral dobla su ancho (300px -> 600px) cuando se mira el esquema */
-.uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,600px) minmax(0,1fr)}
-@media (max-width:1100px){
-  .uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,460px) minmax(0,1fr)}
-}
-@media (max-width:940px){
-  .uji-lector.uji-modo-esquema{grid-template-columns:minmax(0,1fr)}
 }
 
 /* ---------- el esquema, pensado para columna estrecha ---------- */

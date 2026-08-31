@@ -337,14 +337,14 @@ function uji_content_anchor_id( $nodo ) {
 
 /**
  * Fila de botones numéricos (uno por sección del tema), arriba del todo del
- * lateral: acceso directo a cualquier sección sin tener que abrir el Índice.
+ * lateral: eligen a mano qué esquema de sección se muestra en la pestaña
+ * Esquema. No tienen relación con el Índice ni con el contenido del tema.
  */
 function uji_content_render_secnav( array $secciones, $tema_numero ) {
-	$html = '<nav class="uji-secnav" aria-label="Secciones del tema">';
+	$html = '<nav class="uji-secnav" aria-label="Esquemas por sección">';
 	foreach ( $secciones as $seccion ) {
 		$ref = uji_content_ref_seccion( $tema_numero, $seccion );
-		$id  = uji_content_anchor_id( $seccion );
-		$html .= '<a class="uji-secnav__n" href="#' . esc_attr( $id ) . '" data-ref="' . esc_attr( $ref ) . '" title="' . esc_attr( $seccion->titulo ) . '">' . esc_html( $seccion->numero ) . '</a>';
+		$html .= '<button type="button" class="uji-secnav__n" data-ref="' . esc_attr( $ref ) . '" title="Esquema: ' . esc_attr( $seccion->titulo ) . '">' . esc_html( $seccion->numero ) . '</button>';
 	}
 	$html .= '</nav>';
 	return $html;
