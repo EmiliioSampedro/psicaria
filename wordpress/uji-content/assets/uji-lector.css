@@ -529,8 +529,8 @@ body{margin:0;background:#F2F1EC}
 .uji-accion--test:hover{background:var(--sc,var(--uji-acento));color:var(--uji-papel);border-style:solid}
 @media print{.uji-acciones{display:none!important}}
 
-/* ---------- lateral: fila de números de sección ---------- */
-.uji-secnav{display:flex;flex-wrap:wrap;gap:6px}
+/* ---------- lateral: fila de números de sección, arriba del panel Esquema ---------- */
+.uji-secnav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
 .uji-secnav__n{
   display:flex;align-items:center;justify-content:center;
   width:28px;height:28px;border-radius:8px;cursor:pointer;
@@ -543,7 +543,6 @@ body{margin:0;background:#F2F1EC}
   background:var(--uji-acento);border-color:var(--uji-acento);color:var(--uji-papel);
 }
 .uji-secnav__n:focus-visible{outline:2px solid var(--uji-acento);outline-offset:2px}
-@media (max-width:940px){.uji-secnav{display:none}}
 
 /* ---------- lateral: pestañas Índice / Esquema ---------- */
 .uji-rail__tabs{

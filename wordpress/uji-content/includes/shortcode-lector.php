@@ -161,7 +161,6 @@ function uji_content_shortcode_lector( $atts ) {
 	<div class="uji-progreso"><i id="uji-barra"></i></div>
 	<div class="uji-lector">
 		<aside class="uji-rail">
-			<?php echo uji_content_render_secnav( $raiz, $tema->numero ); ?>
 			<div class="uji-rail__tabs" role="tablist">
 				<button type="button" class="uji-tab activo" data-panel="tema" role="tab" aria-selected="true">Tema</button>
 				<button type="button" class="uji-tab" data-panel="esquema" role="tab" aria-selected="false">Esquema</button>
@@ -175,6 +174,7 @@ function uji_content_shortcode_lector( $atts ) {
 					</nav>
 				</div>
 				<div class="uji-panel" data-panel="esquema" hidden>
+					<?php echo uji_content_render_secnav( $raiz, $tema->numero ); ?>
 					<div class="uji-esq">
 						<p class="uji-esq__cab"><span class="uji-esq__ambito">Esquema</span></p>
 						<div class="uji-esq__cuerpo"></div>
@@ -337,8 +337,9 @@ function uji_content_anchor_id( $nodo ) {
 
 /**
  * Fila de botones numéricos (uno por sección del tema), arriba del todo del
- * lateral: eligen a mano qué esquema de sección se muestra en la pestaña
- * Esquema. No tienen relación con el Índice ni con el contenido del tema.
+ * panel Esquema del lateral (solo visible ahí, con esa pestaña activa):
+ * eligen a mano qué esquema de sección se muestra. No tienen relación con
+ * el Índice ni con el contenido del tema.
  */
 function uji_content_render_secnav( array $secciones, $tema_numero ) {
 	$html = '<nav class="uji-secnav" aria-label="Esquemas por sección">';
