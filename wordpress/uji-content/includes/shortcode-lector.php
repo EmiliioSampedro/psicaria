@@ -416,7 +416,12 @@ function uji_content_render_seccion( $seccion, $indice_visible ) {
 	$html .= '<h2 class="uji-sec__titulo">' . esc_html( $seccion->titulo ) . '</h2></header>';
 
 	if ( ! empty( $seccion->contenido_html ) ) {
-		$html .= $seccion->contenido_html; // texto introductorio de la sección, si lo hay
+		// mismo envoltorio "tarjeta" que un epígrafe (uji-ap), pero sin
+		// cabecera numerada -- si no, este texto (el de una sección sin
+		// epígrafes propios) sale sin la caja ni la tipografía del resto.
+		$html .= '<section class="uji-ap uji-ap--suelto">';
+		$html .= '<div class="uji-ap__cuerpo">' . $seccion->contenido_html . '</div>';
+		$html .= '</section>';
 	}
 
 	foreach ( $seccion->hijos as $hijo ) {
