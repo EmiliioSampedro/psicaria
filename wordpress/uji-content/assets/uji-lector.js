@@ -207,4 +207,33 @@
   document.getElementById('uji-menos').addEventListener('click', function(){ n = Math.max(0, n-1); aplicar(); });
   document.getElementById('uji-imprimir').addEventListener('click', function(){ window.print(); });
   aplicar();
+
+  // ---- claro / oscuro: por defecto sigue el sistema (ya lo hace el CSS
+  // solo, vía prefers-color-scheme); este botón permite forzar uno de los
+  // dos, y lo recuerda para la próxima visita.
+  var raiz = document.documentElement;
+  var botonTema = document.getElementById('uji-tema');
+  var prefiereOscuro = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+  var modoGuardado = null;
+  try { modoGuardado = localStorage.getItem('uji-tema-modo'); } catch(e){}
+  if (modoGuardado === 'dark' || modoGuardado === 'light') {
+    raiz.setAttribute('data-theme', modoGuardado);
+  }
+  function temaEfectivo(){
+    var forzado = raiz.getAttribute('data-theme');
+    if (forzado === 'dark' || forzado === 'light') return forzado;
+    return (prefiereOscuro && prefiereOscuro.matches) ? 'dark' : 'light';
+  }
+  function pintarBotonTema(){
+    var oscuro = temaEfectivo() === 'dark';
+    botonTema.textContent = oscuro ? '☀️ Claro' : '🌙 Oscuro';
+    botonTema.title = oscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro';
+  }
+  botonTema.addEventListener('click', function(){
+    var nuevo = temaEfectivo() === 'dark' ? 'light' : 'dark';
+    raiz.setAttribute('data-theme', nuevo);
+    try { localStorage.setItem('uji-tema-modo', nuevo); } catch(e){}
+    pintarBotonTema();
+  });
+  pintarBotonTema();
 })();

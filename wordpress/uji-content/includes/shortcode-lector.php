@@ -183,6 +183,7 @@ function uji_content_shortcode_lector( $atts ) {
 				<div class="uji-herr">
 					<button class="uji-btn" id="uji-menos" title="Reducir el texto">A−</button>
 					<button class="uji-btn" id="uji-mas" title="Aumentar el texto">A+</button>
+					<button class="uji-btn" id="uji-tema" title="Cambiar a modo oscuro">🌙 Oscuro</button>
 					<button class="uji-btn" id="uji-imprimir">Imprimir</button>
 				</div>
 			</div>
