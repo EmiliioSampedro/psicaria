@@ -20,7 +20,8 @@
     }
   }
 
-  document.querySelector('.uji-lector').classList.add('uji-js');
+  var lector = document.querySelector('.uji-lector');
+  lector.classList.add('uji-js');
   var barra = document.getElementById('uji-barra');
   var cuerpo = document.querySelector('.uji-cuerpo');
   function progreso(){
@@ -156,6 +157,7 @@
       if (cuerpo) cuerpo.hidden = false;
       if (railCuerpo) railCuerpo.hidden = false;
     }
+    lector.classList.toggle('uji-modo-esquema', !movil && panelLateral === 'esquema');
   }
 
   tabs.forEach(function(t){
